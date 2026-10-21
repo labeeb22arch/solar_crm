@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {documentTaskState,preparedDocumentKeys} from './documentTask.js';
+const request={token:'t1',expiresAt:'2027-01-01T00:00:00Z'};
+const now=Date.parse('2026-10-21T10:00:00Z');
+assert.equal(documentTaskState({},'quote',now),'prepare');
+assert.equal(documentTaskState({proposalRequest:request},'quote',now),'share');
+assert.equal(documentTaskState({proposalRequest:request,documentDelivery:{t1:{}}},'quote',now),'waiting');
+const returned={proposalRequest:request,proposal:{accepted:{png:'signed'}}};
+assert.equal(documentTaskState(returned,'quote',now),'download');
+assert.equal(documentTaskState({...returned,documentDownloads:{t1:{by:'Staff'}}},'quote',now),'upload');
+assert.equal(documentTaskState({...returned,docLinks:{proposal:{requestToken:'t1',url:'https://example.com'}}},'quote',now),'saved');
+assert.equal(documentTaskState({...returned,docLinks:{proposal:{requestToken:'old',url:'https://example.com'}}},'quote',now),'download','old uploaded version is not current completion');
+assert.equal(documentTaskState({signRequest:{...request,expiresAt:'2020-01-01'}},'agreement',now),'prepare');
+assert.equal(documentTaskState({},'feas',now),'prepare');
+assert.equal(documentTaskState({documentDownloads:{feas:{}}},'feas',now),'upload');
+assert.equal(documentTaskState({docLinks:{feas:{url:'https://example.com'}}},'feas',now),'saved');
+console.log('Document next-action lifecycle checks passed');
+
+assert.deepEqual(preparedDocumentKeys({proposal:{},signRequest:{},documentDownloads:{feas:{}},docLinks:{name:{url:'saved'}}}),['quote','feas','agreement','name']);
+assert.equal(documentTaskState({docLinks:{quote:{url:'https://example.com'}}},'quote',now),'saved');
+assert.equal(documentTaskState({documentDownloads:{name:{}}},'name',now),'upload');

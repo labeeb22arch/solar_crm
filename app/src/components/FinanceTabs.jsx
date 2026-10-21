@@ -1,0 +1,2 @@
+import { NavLink } from 'react-router-dom';
+export default function FinanceTabs({children}) {return <><nav className="materials-tabs" aria-label="Finance">{[['/finance','Overview'],['/finance/received','Payments received'],['/finance/expected','Expected payments'],['/money/loans','Loans'],['/money/subsidy','Subsidy']].map(([to,label])=><NavLink end key={to} to={to}>{label}</NavLink>)}</nav>{children}</>;}

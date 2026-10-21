@@ -1,0 +1,87 @@
+/* DISCOM agreement pages (PM Surya Ghar model agreement, pages 22–25).
+   Plain-CSS copy of the SolarFlow document's Tailwind styling, scoped under .ag-page. */
+.ag-page {
+  font-family: Calibri, 'Calibri Light', 'Gill Sans', 'Segoe UI', Arial, sans-serif;
+  font-weight: 400;
+  width: 210mm; min-height: 297mm; height: 297mm;
+  padding: 12mm 15mm 16mm 15mm;
+  box-sizing: border-box;
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+  color: #1e293b;
+  line-height: 1.625;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: left;
+  letter-spacing: normal;
+}
+.ag-page *, .ag-page *::before, .ag-page *::after { box-sizing: border-box; }
+.ag-page h1, .ag-page h2, .ag-page p { margin: 0; font-size: inherit; font-weight: inherit; }
+.ag-page img { display: block; max-width: 100%; height: auto; }
+.ag-page p, .ag-page div, .ag-page span { font-weight: 400; }
+.ag-fs-14 { font-size: 14px; }
+.ag-fs-16 { font-size: 16px; }
+.ag-fs-17 { font-size: 17px; }
+.ag-fs-19 { font-size: 19px; }
+
+.ag-page .ag-normal { font-weight: 400 !important; }
+.ag-page .ag-semibold { font-weight: 600 !important; }
+.ag-page .ag-bold { font-weight: 700 !important; }
+.ag-underline { text-decoration-line: underline; }
+.ag-justify { text-align: justify; }
+.ag-center { text-align: center; }
+.ag-right { text-align: right; }
+.ag-block { display: block; }
+
+.ag-mb1 { margin-bottom: 4px; }
+.ag-mb4 { margin-bottom: 16px; }
+.ag-mb6 { margin-bottom: 24px; }
+.ag-mb8 { margin-bottom: 32px; }
+.ag-mt4 { margin-top: 16px; }
+.ag-pt1 { padding-top: 4px; }
+.ag-pt2 { padding-top: 8px; }
+.ag-pt4 { padding-top: 16px; }
+
+/* Vertical rhythm between siblings (Tailwind space-y-*). */
+.ag-sy3 > * + * { margin-top: 12px; margin-bottom: 0; }
+.ag-sy35 > * + * { margin-top: 14px; margin-bottom: 0; }
+.ag-sy4 > * + * { margin-top: 16px; margin-bottom: 0; }
+.ag-sy5 > * + * { margin-top: 20px; margin-bottom: 0; }
+
+.ag-annex { text-align: center; font-size: 12px; line-height: 16px; letter-spacing: 0.025em; color: #1e293b; }
+.ag-page .ag-annex { font-weight: 600; }
+.ag-page .ag-title { font-weight: 700; font-size: 14px; line-height: 20px; padding: 0 24px; max-width: 42rem; margin-left: auto; margin-right: auto; }
+@media (min-width: 768px) { .ag-page .ag-title { font-size: 16px; line-height: 24px; } }
+
+.ag-item { display: flex; gap: 10px; align-items: flex-start; }
+.ag-num { flex-shrink: 0; }
+.ag-num22 { min-width: 22px; }
+.ag-num24 { min-width: 24px; }
+.ag-flex1 { flex: 1 1 0%; }
+
+.ag-parties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; font-size: 12px; line-height: 16px; }
+.ag-page .ag-party-head { font-weight: 700; text-align: center; font-size: 14px; line-height: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; }
+.ag-signbox { width: 100%; min-height: 85px; }
+.ag-signrow { height: 85px; display: flex; align-items: center; justify-content: flex-start; }
+.ag-stamprow { padding-left: 8px; gap: 8px; }
+.ag-contain { object-fit: contain; }
+.ag-page .ag-custsign { max-height: 78px; max-width: 200px; }
+.ag-page .ag-vendsign { max-height: 75px; max-width: 140px; }
+
+.ag-footer {
+  position: absolute; bottom: 20px; left: 40px; right: 40px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 8px; font-size: 10px; color: #000;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+}
+.ag-footer-text { flex: 1 1 0%; text-align: center; padding-right: 16px; }
+.ag-footer-no { font-size: 12px; line-height: 16px; color: #000; flex-shrink: 0; }
+
+@media print {
+  .ag-page { box-shadow: none; page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid; }
+  .ag-page span, .ag-page div, .ag-page p { background-color: transparent !important; background: transparent !important; }
+  .ag-page .ag-footer { bottom: 12mm; left: 15mm; right: 15mm; }
+}

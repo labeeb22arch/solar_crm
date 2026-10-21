@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { installationInfo } from './installations.js';
+const pending = { status: 'not_started' };
+assert.equal(installationInfo({}, 'pending_installation', pending).included, true, 'unscheduled installation-stage customers included');
+assert.equal(installationInfo({}, 'leads', pending).included, false, 'unrelated leads excluded');
+assert.equal(installationInfo({ installDate: '2026-01-01' }, 'material_procurement', pending).included, true, 'visits outside current week included');
+const history = { timeline: [{ type: 'installation_rescheduled', at: '2026-10-21', previousDate: '2026-10-20', reason: 'Roof access', newDate: '2026-10-23' }] };
+assert.equal(installationInfo(history, 'pending_installation', pending).installationView, 'rescheduled');
+assert.equal(installationInfo(history, 'pending_installation', pending).rescheduleReason, 'Roof access');
+assert.equal(installationInfo(history, 'completed', { status: 'done' }).installationView, 'completed', 'completed takes precedence over rescheduled');
+assert.equal(installationInfo({}, 'post_installation_docs', { status: 'done' }).included, true, 'completed without scheduled date included');
+const old = { timeline: [{ text: 'installDate changed: 2026-10-20 → 2026-10-23', at: '2026-10-21' }] };
+assert.equal(installationInfo(old, 'pending_installation', pending).previousInstallDate, '2026-10-20');
+assert.equal(installationInfo({ timeline: [{ text: 'installDate changed: — → 2026-10-23' }] }, 'pending_installation', pending).installationView, 'current', 'initial booking is not reschedule');
+console.log('Installation classification checks passed');

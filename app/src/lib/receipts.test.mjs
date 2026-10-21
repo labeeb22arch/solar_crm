@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { indiaDay,cleanReceipt,expectedReceipts } from './receipts.js';
+assert.equal(indiaDay('2026-10-20T20:00:00Z'),'2026-10-21');
+assert.equal(indiaDay('2026-10-20'),'2026-10-20');
+assert.equal(cleanReceipt({amount:'100.50',date:'2026-10-21',mode:'UPI'},200,'2026-10-21').amount,100.5);
+assert.throws(()=>cleanReceipt({amount:'201',date:'2026-10-21',mode:'Cash'},200,'2026-10-21'),/exceeds/);
+assert.throws(()=>cleanReceipt({amount:'1.111',date:'2026-10-21',mode:'Cash'},200,'2026-10-21'),/decimal/);
+assert.throws(()=>cleanReceipt({amount:-1,date:'2026-10-21',mode:'Cash'},200,'2026-10-21'),/positive/);
+assert.throws(()=>cleanReceipt({amount:1,date:'2026-10-22',mode:'Cash'},200,'2026-10-21'),/date/);
+assert.throws(()=>cleanReceipt({amount:1,date:'2026-02-30',mode:'Cash'},200,'2026-10-21'),/date/);
+const pending=expectedReceipts({payments:[{amount:150}],schedule:[{label:'Advance',amount:100,due:'2026-10-20'},{label:'Installation',amount:100,due:'2026-10-25'},{label:'Final',amount:50,due:'2026-10-30'}]});
+assert.equal(pending.length,2);assert.equal(pending[0].amount,50);assert.equal(pending.reduce((s,p)=>s+p.amount,0),100);
+assert.equal(expectedReceipts({payments:[{amount:250}],schedule:[{amount:100},{amount:150}]}).length,0);
+assert.equal(expectedReceipts({payments:[],schedule:[{amount:10}]})[0].date,'','missing due date stays unset');
+console.log('Receipt validation, date boundaries and expected allocation checks passed');
