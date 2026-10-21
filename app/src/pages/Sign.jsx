@@ -71,6 +71,9 @@ function Pad({ onChange }) {
 function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signature', fineprint }) {
   const [tab, setTab] = useState('draw');
   const [review,setReview]=useState(null);
+  const [confirming,setConfirming]=useState(false);
+  const reviewHeading=useRef(null);
+  useEffect(()=>{if(review)reviewHeading.current?.focus();},[review,confirming]);
   const [hasInk, setHasInk] = useState(false);
   const [padKey, setPadKey] = useState(0);
   const [photo, setPhoto] = useState(null); // { url } cleaned
@@ -104,7 +107,8 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
   };
   return (
     <>
-      <div hidden={!!review}>
+      <ol className="signature-progress" aria-label="Signing progress">{['Sign','Preview','Submit'].map((label,i)=><li key={label} aria-current={(confirming?2:review?1:0)===i?'step':undefined} className={(confirming?2:review?1:0)>=i?'active':''}><span>{i+1}</span>{label}</li>)}</ol>
+      <div className="signature-entry" hidden={!!review}>
       <div className="sg-tabs" role="tablist">
         <button role="tab" aria-selected={tab === 'draw'} className={tab === 'draw' ? 'on' : ''} onClick={() => { setTab('draw'); setErr(''); }}><IconPencil size={20} /> Sign on screen</button>
         <button role="tab" aria-selected={tab === 'photo'} className={tab === 'photo' ? 'on' : ''} onClick={() => { setTab('photo'); setErr(''); }}><IconCamera size={20} /> Upload a photo</button>
@@ -124,12 +128,14 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
           ) : (
             <button className="sg-btn ghost big" onClick={() => fileRef.current?.click()} disabled={photoBusy}><IconCamera size={24} /> {photoBusy ? 'Cleaning the photo…' : 'Take or choose a photo'}</button>
           )}
-          <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={pickPhoto} />
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={pickPhoto} />
       </div>
       {err && <p className="sg-err">{err}</p>}
       <button className="sg-btn primary" onClick={()=>{setErr('');const png=tab==='draw'?padWrap.current?.querySelector('canvas')?.toDataURL('image/png'):photo?.url;if(png)setReview({png,method:tab==='draw'?'drawn':'photo'});}} disabled={busy || (tab === 'draw' ? !hasInk : !photo)}>Review signature</button>
       </div>
-      {review&&<section className="signature-review" aria-label="Review signature"><h2>Check your signature</h2><p className="sg-help">Make sure it is clear and complete before sending.</p><div className="sg-photo"><img src={review.png} alt="Signature preview before sending"/></div>{err&&<p className="sg-err" role="alert">{err}</p>}<button className="sg-btn ghost" disabled={busy} onClick={()=>{setReview(null);setErr('');}}><IconPencil size={18}/>Edit signature</button><p className="sg-small">{fineprint}</p><button className="sg-btn primary" disabled={busy} onClick={submit}>{busy?'Sending…':submitLabel==='Submit signature'?'Send signature':submitLabel}</button></section>}
+      {review&&<section className="signature-review" aria-label={confirming?'Submit signature':'Preview signature'}><h2 ref={reviewHeading} tabIndex={-1}>{confirming?'Ready to submit?':'Preview your signature'}</h2><p className="sg-help">{confirming?'Your signature will be sent to Sunpay with this document.':'Check that your signature is clear and complete.'}</p><div className="sg-photo"><img src={review.png} alt="Your signature preview"/></div>{err&&<p className="sg-err" role="alert">{err}</p>}
+      {confirming?<><p className="sg-small">{fineprint}</p><button className="sg-btn primary" disabled={busy} onClick={submit}>{busy?'Submitting…':submitLabel==='Submit signature'?'Submit signature':submitLabel}</button><button className="sg-btn ghost" disabled={busy} onClick={()=>setConfirming(false)}>Back to preview</button></>:<><div className="signature-edit-actions"><button className="sg-btn ghost" disabled={busy} onClick={()=>{setReview(null);setConfirming(false);setErr('');}}>Change signature</button><button className="sg-btn ghost" disabled={busy} onClick={()=>{clear();setPhoto(null);setReview(null);setConfirming(false);setErr('');}}>Try again</button></div><button className="sg-btn primary" disabled={busy} onClick={()=>setConfirming(true)}>Continue to submit</button><p className="sg-small">Nothing is sent until you submit on the next step.</p></>}
+      </section>}
     </>
   );
 }

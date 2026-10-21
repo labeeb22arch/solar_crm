@@ -1,3 +1,4 @@
+import SerialScanner from '../components/SerialScanner.jsx';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -83,10 +84,6 @@ function Job({ pid, onBack }) {
     if (mods.includes(v)) { toast('Duplicate serial ignored: ' + v); return; }
     setMods((m) => [v, ...m]);
   };
-  const scan = () => {
-    setScanning(true);
-    setTimeout(() => { add('HM540' + (2700000 + Math.floor(Math.random() * 99999))); setScanning(false); if (navigator.vibrate) navigator.vibrate(30); }, 650);
-  };
   const importXls = () => {
     const base = 2800000 + Math.floor(Math.random() * 9000) * 10;
     const list = Array.from({ length: expected }, (_, i) => 'HM540' + (base + i));
@@ -130,12 +127,7 @@ function Job({ pid, onBack }) {
         <button className={mode === 'manual' ? 'on' : ''} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setMode('manual')}><IconKeyboard size={15} /> Type</button>
         <button className={mode === 'excel' ? 'on' : ''} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setMode('excel')}><IconFileSpreadsheet size={15} /> Excel</button>
       </div>
-      {mode === 'camera' && (
-        <div className="stack" style={{ gap: 10 }}>
-          <div className="scanner"><div className="frame"><div className="laser" /></div><div className="lbl">{scanning ? 'Reading barcode…' : 'Point at the module label barcode (simulated)'}</div></div>
-          <button className="btn primary big-btn" onClick={scan} disabled={scanning || ro}><IconBarcode size={18} /> {scanning ? 'Scanning…' : 'Tap to scan'}</button>
-        </div>
-      )}
+      {mode==='camera'&&<SerialScanner disabled={ro} onSerial={(serial,target)=>target==='inverter'?setInv(serial.trim().toUpperCase()):add(serial)}/>}
       {mode === 'manual' && (
         <form className="row" onSubmit={(e) => { e.preventDefault(); add(manual); setManual(''); }}>
           <input className="input grow mono" style={{ height: 44 }} value={manual} onChange={(e) => setManual(e.target.value)} placeholder="e.g. HM5402712345" autoCapitalize="characters" />

@@ -1660,3 +1660,31 @@ a.kpi:hover .kpi-go { color: var(--tc-ink); transform: translate(2px, -2px); }
 .simple-document-task>.btn {margin-right:8px;margin-bottom:8px;}
 .signature-review .sg-photo {background:white;border:1px solid #e7e0d7;border-radius:12px;margin:20px 0;}
 .signature-review .sg-photo img {width:100%;max-height:220px;object-fit:contain;}
+.signature-progress {display:flex;list-style:none;gap:12px;padding:0;margin:0 0 16px;justify-content:space-between;font-size:14px;}
+.signature-progress li {display:flex;gap:6px;align-items:center;color:#777;}.signature-progress li.active{color:#a84818;font-weight:650;}
+.signature-progress li>span {display:grid;place-items:center;width:26px;height:26px;border:1px solid #d9d3c8;border-radius:50%;}.signature-progress li.active>span{background:#fbede2;border-color:#b85a24;}
+.signature-entry:not([hidden]),.signature-review {display:flex;flex-direction:column;gap:14px;min-width:0;}
+.signature-entry[hidden] {display:none!important;}
+.signature-review h2 {font-size:22px;margin:0;}.signature-review h2:focus{outline:none;}
+.signature-review .sg-btn {width:100%;white-space:normal;padding:12px 16px;}
+.signature-edit-actions {display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sg-page,.sg-card,.sg-head,.sg-accept,.sg-doc {min-width:0;}.sg-card{box-sizing:border-box;overflow-wrap:anywhere;}
+.sg-card .sg-btn{touch-action:manipulation;}.sg-photo img{max-width:100%;}
+@media(max-width:600px){
+ .sg-page{padding:8px;min-height:100dvh;}.sg-card{padding:16px 12px 24px;border-radius:12px;max-width:100%;}
+ .sg-title{font-size:23px;}.sg-lead{font-size:16px;line-height:1.6;}.sg-head svg{flex-shrink:0;}
+ .sg-tabs button{font-size:15px;min-height:52px;}.sg-btn{width:100%;min-height:52px;}
+ .sg-pad{height:210px;}.sg-doc{margin:0;padding:8px;border-radius:8px;overflow:hidden;}
+ .sg-sum b{font-size:17px;overflow-wrap:anywhere;}.sg-call{white-space:normal;max-width:100%;box-sizing:border-box;}
+ .signature-progress{gap:6px;font-size:13px;}.signature-edit-actions{grid-template-columns:1fr;}
+ .simple-document-list .card-b{padding:16px;}.document-card-actions{flex-direction:column;}.document-card-actions>.btn,.simple-document-task>.btn{width:100%;min-height:48px;white-space:normal;}
+ .simple-document-task input,.simple-document-task textarea,.document-setup-form input,.document-setup-form select{font-size:16px;max-width:100%;box-sizing:border-box;}
+ .document-setup-form{display:flex;flex-direction:column;align-items:stretch;}.docs-head{flex-wrap:wrap;}.docs-score{display:none;}
+ .feas-grid{grid-template-columns:minmax(0,1fr)!important;}.feas-preview{min-width:0;overflow:hidden;}.feas-preview iframe{width:100%;max-width:100%;height:65dvh;}
+ .ag-toolbar,.ag-tools{flex-wrap:wrap;}.ag-toolbar .btn{min-height:44px;}
+}
+.warranty-warning{color:var(--coral);flex-shrink:0;}.warranty-issue-dialog{overflow-y:auto;padding-bottom:30px;}.warranty-issue-dialog>.card-h{display:flex;justify-content:space-between;align-items:center;}.warranty-issue-customer{padding:14px;background:var(--surface-2);border-radius:8px;margin:14px 0;}.warranty-issue-customer p{margin:6px 0;}.serial-camera{display:flex;flex-direction:column;gap:14px;}.serial-camera video{width:100%;max-height:340px;object-fit:cover;border-radius:12px;background:#111;}.serial-camera video[hidden]{display:none;}
+@media(max-width:600px){.warranty-issue-dialog{width:100%;max-width:100%;}.warranty-issue-dialog .input,.warranty-issue-dialog .select,.serial-camera .input,.serial-camera .select{font-size:16px;}.serial-camera .btn{min-height:48px;white-space:normal;}}
+.loan-name-check{margin-top:18px;}.loan-name-check h3{margin-bottom:14px;}.loan-name-check input[type=file]{width:100%;min-width:0;font-size:12px;}.loan-name-check pre{max-height:180px;overflow:auto;}
+@media(max-width:600px){.loan-name-check .input{font-size:16px;}.loan-name-check .btn{width:100%;min-height:48px;}}
+.warranty-history>[hidden]{display:none!important;}

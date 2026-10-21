@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {nameFromText,cleanNameVerification} from './nameVerification.js';
+assert.equal(nameFromText('Consumer Name: RAMESH PATEL\nAddress: 4 Main Road'),'RAMESH PATEL');
+assert.equal(nameFromText('Account Holder Name\nRamesh Patel'),'Ramesh Patel');
+assert.equal(nameFromText('Account No: 12345678'),'');
+assert.throws(()=>cleanNameVerification({discomName:'A',bankName:'A'}),/Confirm/);
+assert.equal(cleanNameVerification({discomName:'Ramesh Patel',bankName:'RAMESH PATEL',bankConfirmed:true}).match,true);
+assert.equal(cleanNameVerification({discomName:'A',bankName:'B',bankConfirmed:true}).resolution,null);
+assert.equal(cleanNameVerification({discomName:'A',bankName:'B',bankConfirmed:true,samePerson:true}).resolution,'Accepted as same person');
+console.log('Name extraction and bank-name verification checks passed');

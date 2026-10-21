@@ -1,3 +1,4 @@
+import {cleanNameVerification} from '../lib/nameVerification.js';
 import { paymentMilestones, cleanPaymentPlan } from '../lib/customerMilestones.js';
 import { OPERATIONS_CATEGORIES, operationsOptions, changeOperationsOption } from '../lib/operationsLists.js';
 import { documentTaskState, preparedDocumentKeys, DOCUMENT_TASKS } from '../lib/documentTask.js';
@@ -1147,7 +1148,7 @@ export async function setClosureItem(pid, key, status) {
   setItem(p, 'closure', key, status); persist(); return delay(true);
 }
 export async function listWarranty() {
-  return delay(scoped().filter((p) => p.warranty || item(p, 'supply', 'installation').status === 'done' || item(p, 'grid', 'commissioning').status === 'done').map((p) => ({ ...warrantyRecord(p), teamName: TEAMS.find((t) => t.id === p.team)?.name || '' })));
+  return delay(scoped().filter((p) => stageOf(p)==='completed').map((p) => ({ ...warrantyRecord(p), teamName: TEAMS.find((t) => t.id === p.team)?.name || '' })));
 }
 export async function saveWarranty(pid, fields) {
   const p = find(pid);
@@ -1554,7 +1555,7 @@ function apiDeliveryScope(payload, action) { return action !== 'create' || Array
 
 export async function saveWarrantyIssue(pid, issueId, input) {
   const p = find(pid);
-  if (!p || !inScope(p) || !can(session.role, 'edit')) deny();
+  if (!p || !inScope(p) || !(can(session.role, 'edit')||can(session.role,'field'))) deny();
   const at = nowIso();
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   const by = auth?.name || identityLabel() || session.role;
@@ -1769,4 +1770,13 @@ export async function saveCustomerPaymentPlan(pid,entries) {
   const plan=cleanPaymentPlan(entries,p.value);
   for(const payment of p.payments)if(Number.isInteger(payment.milestoneIndex)&&payment.milestoneIndex>=plan.length)throw new Error('Keep milestones that already have payments assigned');
   p.schedule=plan;log(p,{type:'note',text:`Payment plan updated · ${plan.length} milestones`});persist();return delay(true);
+}
+
+export async function saveLoanNameVerification(pid,input) {
+ const p=find(pid);if(!p||!inScope(p)||!can(session.role,'edit'))deny();
+ const checked=cleanNameVerification(input);const verifiedAt=nowIso(),verifiedBy=auth?.name||identityLabel()||session.role;
+ p.nameCheck={...p.nameCheck,...checked,verifiedAt,verifiedBy};
+ setItem(p,'grid','name_check',checked.match||checked.resolution?'done':'blocked');
+ p.verification||={};p.verification.account_name={checked:!!(checked.match||checked.resolution),at:verifiedAt,by:verifiedBy};
+ log(p,{type:'note',text:`Loan bill/bank name check: ${checked.match?'Names match':checked.resolution?'Verified as same customer':'Mismatch requires attention'}`});persist();return delay(true);
 }

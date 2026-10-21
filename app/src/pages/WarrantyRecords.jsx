@@ -1,3 +1,4 @@
+import { IconAlertTriangle,IconX } from '@tabler/icons-react';
 import { ManagedInput } from '../components/ManagedOptions.jsx';
 import WarrantyHistory from './WarrantyHistory.jsx';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ const sections = [
 const show = (value) => value === '' || value == null ? 'Not recorded' : value;
 const date = (value) => value ? fdateY(value) : 'Not recorded';
 export default function WarrantyRecords({ customerId, embedded = false }) {
+  const [issueCustomer,setIssueCustomer]=useState(null);
   const session = useSession();
   const [version, setVersion] = useState(0);
   const [rows] = useData(() => customerId ? api.getWarranty(customerId).then((record) => [record]) : api.listWarranty(), [customerId, session.role, session.branch, version]);
@@ -30,10 +32,10 @@ export default function WarrantyRecords({ customerId, embedded = false }) {
   };
   const list = (rows || []).filter((r) => `${r.name} ${r.crn} ${r.invoiceNumber} ${r.moduleSerials.join(' ')} ${r.inverterSerial}`.toLowerCase().includes(search.toLowerCase()));
   return <div className={embedded ? "embedded-warranty" : "page"}>
-    {!embedded && <PageHead title="Warranty" sub="Invoice dates, installation cover, equipment details and recorded serial numbers." />}
+    {!embedded && <PageHead title="Warranty" sub="Completed customers, warranty cover and service history.">{(api.canDo('edit')||api.canDo('field'))&&<button className="btn warranty-warning" title="Report warranty issue" aria-label="Report warranty issue" disabled={!rows?.length} onClick={()=>setIssueCustomer(rows[0].pid)}><IconAlertTriangle size={22}/>Report issue</button>}</PageHead>}
     {!embedded && <input className="input" style={{ maxWidth: 400, marginBottom: 18 }} aria-label="Search warranty records" placeholder="Search customer, invoice or serial number" value={search} onChange={(e) => setSearch(e.target.value)} />}
     {rows === null ? <div className="card card-b">Loading warranties…</div> : !list.length ? <Empty>No matching installed customers.</Empty> : list.map((r) => <details className="card warranty-record" key={r.pid} open={embedded || undefined}>
-      <summary><div><strong>{r.name}</strong><div className="small faint">{r.crn} · {r.city} · {r.kwp} kWp</div></div><div><span className="small faint">Invoice date</span><div>{date(r.invoiceDate)}</div></div><div><span className="small faint">Installation cover until</span><div>{date(r.terms[0].until)} · {r.workmanshipYears === '' ? 'Years not recorded' : `${r.workmanshipYears} years`}</div></div><span className="small">{r.issues.filter((i) => i.status !== 'resolved').length} open issues · View details</span></summary>
+      <summary><div><strong>{r.name}</strong><div className="small faint">{r.crn} · {r.city} · {r.kwp} kWp</div></div><div><span className="small faint">Invoice date</span><div>{date(r.invoiceDate)}</div></div><div><span className="small faint">Installation cover until</span><div>{date(r.terms[0].until)} · {r.workmanshipYears === '' ? 'Years not recorded' : `${r.workmanshipYears} years`}</div></div><button type="button" className="btn icon ghost warranty-warning" title="Report warranty issue" aria-label={`Report warranty issue for ${r.name}`} onClick={e=>{e.preventDefault();e.stopPropagation();setIssueCustomer(r.pid);}}><IconAlertTriangle size={21}/></button><span className="small">{r.issues.filter((i) => i.status !== 'resolved').length} open issues · View details</span></summary>
       <div className="card-b">
         <div className="row" style={{ justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}><CustName id={r.pid} name={r.name} crn={r.crn} /><Pill status={r.registered ? 'done' : 'waiting_third'}>{r.registered ? 'Warranty registered' : 'Registration pending'}</Pill>{api.canDo('edit') && <button className="btn" disabled={busy} onClick={() => { setEditing(r.pid); setForm({ ...r }); setError(''); }}>Edit warranty details</button>}</div>
         {editing === r.pid ? <form onSubmit={(e) => save(e, r.pid)}>
@@ -49,5 +51,6 @@ export default function WarrantyRecords({ customerId, embedded = false }) {
         <WarrantyHistory record={r} onSaved={() => setVersion((v) => v + 1)} />
       </div>
     </details>)}
+    {issueCustomer&&<><div className="overlay" onClick={()=>setIssueCustomer(null)}/><section className="side-panel warranty-issue-dialog" role="dialog" aria-modal="true" aria-labelledby="warranty-issue-title"><div className="card-h"><h2 id="warranty-issue-title">Warranty issue</h2><button className="btn icon ghost" aria-label="Close issue form" onClick={()=>setIssueCustomer(null)}><IconX size={20}/></button></div><div className="card-b">{!embedded&&<label className="fld"><span>Customer</span><select className="select" value={issueCustomer} onChange={e=>setIssueCustomer(e.target.value)}>{(rows||[]).map(r=><option key={r.pid} value={r.pid}>{r.name} · {r.crn}</option>)}</select></label>}{rows?.find(r=>r.pid===issueCustomer)&&<WarrantyHistory key={issueCustomer} record={rows.find(r=>r.pid===issueCustomer)} autoOpen editorOnly onCancel={()=>setIssueCustomer(null)} onSaved={()=>{setIssueCustomer(null);setVersion(v=>v+1);}}/>}</div></section></>}
   </div>;
 }

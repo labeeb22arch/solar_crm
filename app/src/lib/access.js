@@ -69,7 +69,7 @@ export const PAGES = {
   // invoices: { label: 'Bills & invoices', roles: OFFICE },
   cp_comm: { label: 'Partner commission', roles: OFFICE },
   inst_comm: { label: 'Installation commission', roles: OFFICE },
-  warranty: { label: 'Warranty', roles: OFFICE },
+  warranty: { label: 'Warranty', roles: [...OFFICE,'Technician','Installation Team'] },
   attendance: { label: 'Attendance', roles: ['Admin', 'Office Staff'] },
   users: { label: 'Users & roles', roles: ['Admin'] },
   // company: { label: 'Company sign & stamp', roles: ['Admin'] },
