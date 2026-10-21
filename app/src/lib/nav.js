@@ -5,7 +5,7 @@ import {
 } from '@tabler/icons-react';
 import { pageAllowed } from './access.js';
 
-// Main menu. Modules only — never stages. `page` refers to PAGES in access.js.
+// Main menu. Project Management expands its shared stage definitions. `page` refers to PAGES in access.js.
 // `section` groups the side menu (shown with a header for office roles); `tone` colours the icon chip;
 // `match` lists extra paths that light up the item; `soon` shows the item greyed with a "Soon" badge (not clickable).
 export const NAV_SECTIONS = [

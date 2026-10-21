@@ -40,3 +40,8 @@ Keep this working note current while discussing. Record accepted structural deci
 ADR 0004 supersedes the board layout and active-customer Warranty tab. Project Management now has a vertical stage selector and a single customer work list. Today prioritizes current-stage work; Overview summarizes the same pipeline. Stage task selection comes from actual tasks in the selected stage, preserves role visibility and never auto-completes tasks. Loan/subsidy are plain sidebar destinations. Customer details use aligned full-width disclosures; the expanded journey is optional. Documents exposes three consistent choices and defaults to the current requirement. Completed owns read-only warranty coverage and technical records, with service issues still actionable.
 
 Verification: 17 automated test files pass; production build passes. Browser verified stage selection, document switching, quotation preparation/cancel, four customer tabs, direct finance tracking links and completed warranty detail. No live customer record modified. Physical phone and screen reader remain unverified.
+
+## Main-menu stage navigation — ADR 0005
+The user clarified that Project Management itself should expand into its 11 stages in the main sidebar. Removed the secondary stage rail; stage customers now use the full content width. Direct stage URLs and confirmed movement remain intact.
+
+Verified main-menu expand/collapse, all 11 stage links, direct-stage selection, full-width customer content and production build. All 17 test files pass. Shared menu is available under More; physical phone rendering remains unverified.

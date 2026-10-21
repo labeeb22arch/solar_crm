@@ -1,3 +1,4 @@
+import ProjectStageMenu from '../components/ProjectStageMenu.jsx';
 import Procurement from './Procurement.jsx';
 import WarrantyRecords from './WarrantyRecords.jsx';
 import DeliveryBatches from './DeliveryBatches.jsx';
@@ -281,7 +282,7 @@ export function More() {
     <div className="page">
       <PageHead title="All pages" sub={`Everything you can open as ${ROLE_INFO[session.role].long}.`} />
       <div className="card">
-        {mods.map((m) => (
+        {mods.map((m) => m.key === 'project_management' ? <ProjectStageMenu key={m.key} module={m}/> : (
           <div key={m.key} className="oi" style={{ alignItems: 'center', cursor: 'pointer', padding: '12px 14px' }} onClick={() => nav(m.to)}>
             <m.icon size={19} className="faint" /><span className="grow"><span style={{ fontWeight: 600, display: 'block' }}>{m.label}</span><span className="small muted">{m.desc}</span></span><IconChevronRight size={16} className="faint" />
           </div>

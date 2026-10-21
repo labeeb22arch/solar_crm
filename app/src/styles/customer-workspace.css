@@ -412,3 +412,17 @@
 .warranty-record.full-record>summary {display:none;}
 .pipeline-current-work {padding:10px 16px;margin-bottom:12px;}
 .pipeline-current-work h2 {font-size:15px;margin:4px 0 0;}
+
+/* ADR 0005: stage navigation belongs to the existing main menu only. */
+.project-stage-menu>button {width:100%;border:0;cursor:pointer;font:inherit;text-align:left;}
+.project-stage-menu>button>svg {margin-left:auto;transition:transform .15s;}
+.project-stage-menu>button>svg.expanded {transform:rotate(180deg);}
+.main-project-stages {display:grid;padding:4px 0 8px 18px;gap:2px;}
+.main-project-stage {display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:7px;align-items:center;padding:9px 8px;min-height:42px;border-radius:9px;color:var(--text-2);font-size:12px;line-height:1.4;}
+.main-project-stage:hover {background:var(--surface-2);}
+.main-project-stage.selected {color:var(--accent-text);background:var(--accent-soft);font-weight:600;}
+.main-stage-number {font-size:10px;color:var(--text-3);text-align:center;}
+.main-project-stage small {font-size:10px;font-variant-numeric:tabular-nums;}
+.project-management>.pipeline-stage-content {width:100%;}
+@media(max-width:720px){.main-project-stage{min-height:44px;}}
+.project-management .pipeline-stage-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}

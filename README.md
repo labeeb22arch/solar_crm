@@ -37,7 +37,7 @@ Provide the two `VITE_SUPABASE_*` variables in your hosting build environment or
 
 Database setup scripts are in `app/supabase/`; local credentials and environment files are excluded. Example data scripts in `app/supabase/examples/` contain illustrative values only.
 
-This is the current working CRM, including customer records, document workflows, procurement, installations, Finance, loan/subsidy tracking and warranty screens. Some cloud operations require their matching SQL/RPC setup; review the SQL scripts before enabling those operations. Active customers are separate from Completed (warranty/service), and Trash supports recoverable removal. Project Management follows the end-to-end pipeline with a vertical stage selector and confirmed next-stage moves. Today and Overview use the same current-stage tasks. Warranty records live in Completed.
+This is the current working CRM, including customer records, document workflows, procurement, installations, Finance, loan/subsidy tracking and warranty screens. Some cloud operations require their matching SQL/RPC setup; review the SQL scripts before enabling those operations. Active customers are separate from Completed (warranty/service), and Trash supports recoverable removal. Project Management follows the end-to-end pipeline with stages expanding under Project Management in the main menu and confirmed next-stage moves. Today and Overview use the same current-stage tasks. Warranty records live in Completed.
 
 ## Product and engineering decisions
 

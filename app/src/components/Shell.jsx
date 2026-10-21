@@ -1,3 +1,4 @@
+import ProjectStageMenu from './ProjectStageMenu.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -19,7 +20,7 @@ export default function Shell() {
   const mods = modulesFor(session.role, { withSoon: true });
   const searchRef = useRef(null);
 
-  useEffect(() => { document.getElementById('content')?.scrollTo(0, 0); }, [loc.pathname]);
+  useEffect(() => { document.getElementById('content')?.scrollTo(0, 0); }, [loc.pathname, loc.pathname === '/project-management' ? loc.search : '']);
   useEffect(() => {
     const h = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); searchRef.current?.focus(); }
@@ -88,7 +89,7 @@ function SideMenu({ mods, role, path }) {
   const [closed, setClosed] = useState(() => { try { return JSON.parse(localStorage.getItem(NAV_KEY) || '{}'); } catch { return {}; } });
   const toggle = (k) => setClosed((c) => { const n = { ...c, [k]: !c[k] }; try { localStorage.setItem(NAV_KEY, JSON.stringify(n)); } catch { /* */ } return n; });
   const headed = OFFICE_ROLES.includes(role);
-  const item = (m) => (m.soon
+  const item = (m) => m.key === 'project_management' ? <ProjectStageMenu key={m.key} module={m}/> : (m.soon
     ? <span key={m.key} className="rail-btn soon" aria-disabled="true" title={`${m.label} is coming soon`}>
         <span className={'nav-ico t-' + m.tone}><m.icon size={17} stroke={1.9} /></span>
         <span className="rail-lbl">{m.label}</span><span className="soon-pill">Soon</span>

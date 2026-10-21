@@ -10,4 +10,6 @@ Use this log when a change affects navigation, customer data, stage progression,
 
 | [0004](0004-pipeline-first-workspace.md) | Accepted, 2026-10-22 | Pipeline-first navigation; vertical stages; warranty in Completed |
 
+| [0005](0005-stage-navigation-in-main-menu.md) | Accepted, 2026-10-22 | Stages inside main Project Management menu; no second sidebar |
+
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.
