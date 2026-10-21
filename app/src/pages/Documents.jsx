@@ -2,8 +2,8 @@ import { ManagedSelect } from '../components/ManagedOptions.jsx';
 import { preparedDocumentKeys } from '../lib/documentTask.js';
 import DocumentTask from '../components/DocumentTask.jsx';
 import DocumentQueues from '../components/DocumentQueues.jsx';
-import { documentRules, SCHEMES } from '../lib/documentRules.js';
-import { useMemo, useState } from 'react';
+import { documentAvailable, documentRules, SCHEMES } from '../lib/documentRules.js';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate,useNavigate, useSearchParams } from 'react-router-dom';
 import {
   IconFileInvoice, IconFileCertificate, IconSolarPanel2, IconFileText, IconId, IconReceipt, IconFolders, IconArrowRight, IconCircleCheck, IconAlertTriangle, IconClock, IconPencil, IconBrandGoogleDrive, IconUserSearch, IconFilePlus, IconFolderPlus, IconLock,
@@ -28,6 +28,7 @@ export default function Documents({ customerId, embedded = false }) {
   const session = useSession();
   const nav = useNavigate();
   const [params, setParams] = useSearchParams();
+  const [selectedDocument,setSelectedDocument]=useState(null);
   const pid = customerId || params.get('p');
   const [p] = useData(() => (pid ? api.getProject(pid) : Promise.resolve(null)), [pid]);
   const [assets] = useData(() => api.getCompanyAssets(), []);
@@ -35,7 +36,9 @@ export default function Documents({ customerId, embedded = false }) {
   const ok = p && !p.notFound && !p.forbidden;
   const can = (page) => pageAllowed(page, session.role);
 
+  useEffect(()=>setSelectedDocument(null),[pid]);
   const workflow = ok ? documentRules(p) : null;
+  const selectedKey=selectedDocument||(workflow?.classify('feas').bucket==='current'?'feas':workflow?.classify('agreement').bucket==='current'?'agreement':'quote');
   const docs = useMemo(() => {
     if (!ok) return [];
     const a = assets || {};
@@ -101,7 +104,7 @@ export default function Documents({ customerId, embedded = false }) {
     });
     // The four documents first, in this order; everything else after.
     const ORDER = ['quote', 'feas', 'agreement'];
-    return [...ORDER.map((k) => out.find((d) => d.key === k)), ...out.filter((d) => !ORDER.includes(d.key))].filter(Boolean).map((d) => { const rule = documentRules(p).classify(d.key); if (d.key === 'invoice' && d.disabled) { rule.bucket = 'later'; rule.reason = 'Available after payment or commissioning.'; } return { ...d, ...rule, disabled: d.disabled || rule.bucket === 'later', extra: rule.bucket === 'current' ? d.extra : null }; }).filter((d) => d.bucket !== 'hidden');
+    return [...ORDER.map((k) => out.find((d) => d.key === k)), ...out.filter((d) => !ORDER.includes(d.key))].filter(Boolean).map((d) => { const rule = documentRules(p).classify(d.key); if (d.key === 'invoice' && d.disabled) { rule.bucket = 'later'; rule.reason = 'Available after payment or commissioning.'; } return { ...d, ...rule, disabled: d.disabled || rule.bucket === 'later', extra: rule.bucket === 'current' ? d.extra : null }; });
   }, [ok, p, assets]);
 
   const ready = docs.filter((d) => d.state === 'done').length;
@@ -126,8 +129,12 @@ export default function Documents({ customerId, embedded = false }) {
                   <StageChip r={p.summary} />
 
                 </div>}
-                <div className="simple-document-list">{docs.filter((d)=>(d.bucket==='current'||preparedDocumentKeys(p).includes(d.key)||d.key==='quote'&&preparedDocumentKeys(p).includes('quote'))&&!['drive','proposal'].includes(d.key)).map((d)=><section className="card card-b" key={d.key}><h2>{d.key==='quote'?'Quotation':d.title}</h2><DocumentTask customerId={p.id} docKey={d.key}/></section>)}</div>
-                {!docs.some((d)=>(d.bucket==='current'||preparedDocumentKeys(p).includes(d.key))&&!['drive','proposal'].includes(d.key))&&<Empty>No new documents required at this stage.</Empty>}
+                <nav className="document-type-selector" aria-label="Document type">{[['quote','Quotation'],['feas','Feasibility report'],['agreement','DISCOM submission']].map(([key,label])=><button key={key} aria-pressed={selectedKey===key} className={selectedKey===key?'selected':''} onClick={()=>setSelectedDocument(key)}>{label}<small>{documentAvailable(p,key)?'Prepare / view':'Not required'}</small></button>)}</nav>
+                <div className="simple-document-list">{docs.filter(d=>d.key===selectedKey&&['quote','feas','agreement'].includes(d.key)).map(d=>{
+                  const prepared=preparedDocumentKeys(p).includes(d.key);
+                  const applicable=documentAvailable(p,d.key);
+                  return <section className="card card-b" key={d.key}><div className="document-entry-heading"><h2>{d.key==='quote'?'Quotation':d.title}</h2><span className="small faint">{d.bucket==='current'?'Needed at this stage':prepared?'Previously prepared':applicable?'Available to prepare':'Not required'}</span></div><p className="small faint">{d.key==='quote'?'Prepare, preview and share the quotation.':d.reason}</p>{applicable||prepared?<DocumentTask customerId={p.id} docKey={d.key}/>:<p className="small">{d.key==='feas'?'For customers using a bank or personal loan.':'For PM Surya Ghar customers.'} Update project requirements below if needed.</p>}</section>;
+                })}</div>
                 <details className="document-extra"><summary>Project requirements</summary><DocumentSetup key={p.id} p={p} workflow={workflow}/></details>
                 <details className="document-extra"><summary>Existing documents & history</summary><DocGrid docs={docs.filter((d)=>d.bucket==='history'&&!['quote','proposal','feas','agreement','name'].includes(d.key))} p={p} can={can} nav={nav}/></details>
 

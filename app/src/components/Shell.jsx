@@ -1,4 +1,3 @@
-import { TRACKING_STATUSES } from '../lib/financeTracking.js';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -86,11 +85,10 @@ const OFFICE_ROLES = ['Admin', 'Office Staff', 'Finance'];
 const NAV_KEY = 'solarcrm.nav.closed';
 /** Side menu: items grouped in sections (Operations, Money, Team) with a header that folds the section. Open/closed is remembered. */
 function SideMenu({ mods, role, path }) {
-  const [trackingCounts] = useData(() => api.financeTrackingCounts(), [role, api.getSession().branch]);
   const [closed, setClosed] = useState(() => { try { return JSON.parse(localStorage.getItem(NAV_KEY) || '{}'); } catch { return {}; } });
   const toggle = (k) => setClosed((c) => { const n = { ...c, [k]: !c[k] }; try { localStorage.setItem(NAV_KEY, JSON.stringify(n)); } catch { /* */ } return n; });
   const headed = OFFICE_ROLES.includes(role);
-  const item = (m) => m.trackingKind ? <details key={m.key} className="tracking-nav" open={path===m.to || undefined}><summary className={'rail-btn'+(path===m.to?' active':'')}><span className={'nav-ico t-'+m.tone}><m.icon size={17}/></span><span className="rail-lbl">{m.label}</span><span className="tracking-nav-count">{trackingCounts?.[m.trackingKind]?.all ?? 0}</span><IconChevronDown size={13}/></summary><div className="tracking-nav-children">{[['all','All customers'], ...TRACKING_STATUSES[m.trackingKind]].map(([key,label])=><NavLink key={key} to={m.to+(key==='all'?'':'?status='+key)}>{label}<span>{trackingCounts?.[m.trackingKind]?.[key] ?? 0}</span></NavLink>)}</div></details> : (m.soon
+  const item = (m) => (m.soon
     ? <span key={m.key} className="rail-btn soon" aria-disabled="true" title={`${m.label} is coming soon`}>
         <span className={'nav-ico t-' + m.tone}><m.icon size={17} stroke={1.9} /></span>
         <span className="rail-lbl">{m.label}</span><span className="soon-pill">Soon</span>

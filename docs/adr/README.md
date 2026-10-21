@@ -8,4 +8,6 @@ Use this log when a change affects navigation, customer data, stage progression,
 | [0002](0002-project-management.md) | Accepted, 2026-10-22 | Stage Kanban; only next-stage moves, with confirmation |
 | [0003](0003-completed-and-trash.md) | Accepted, 2026-10-22 | Separate Completed; recoverable Trash with retained payment history |
 
+| [0004](0004-pipeline-first-workspace.md) | Accepted, 2026-10-22 | Pipeline-first navigation; vertical stages; warranty in Completed |
+
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.

@@ -1,6 +1,6 @@
 # Customer workspace design session — 2026-10-22
 
-## Accepted
+## Original decisions (revised below by ADR 0004)
 - Full-width customer list opening a full-width customer workspace.
 - Project Management: all existing stages as Kanban columns.
 - Ask for confirmation before moving to the next stage.
@@ -23,7 +23,7 @@ Keep visible labels and keyboard actions. Kanban must have a button equivalent t
 - Documents: customer Documents tab; tracking inbox separate.
 - Panel/inverter/structure details: Overview Technical & material order.
 - Serial numbers: inline scan/manual entry into Overview Serial numbers, retaining shared scanner/API.
-- Warranty: customer Warranty tab with issue form/history.
+- Warranty: read-only coverage and technical record in Completed; service issue form/history remain available.
 - Stage: on-demand drawer and Project Management, same confirmed next-stage action.
 - Trash: recoverable archive/restore with reason; all customer data retained. No permanent delete control.
 
@@ -35,3 +35,8 @@ Keep this working note current while discussing. Record accepted structural deci
 - Browser verified full-width workspace, inline serial editor, confirmation/cancel, active list, Completed and Trash navigation. No live customer moved, archived or financially edited for testing.
 - Physical camera, real phone layout and native drag/drop remain unverified. The accessible move button and cancellation were verified.
 - Review: REVIEW-2026-10-22.md.
+
+## Revised feedback — pipeline-first, 2026-10-22
+ADR 0004 supersedes the board layout and active-customer Warranty tab. Project Management now has a vertical stage selector and a single customer work list. Today prioritizes current-stage work; Overview summarizes the same pipeline. Stage task selection comes from actual tasks in the selected stage, preserves role visibility and never auto-completes tasks. Loan/subsidy are plain sidebar destinations. Customer details use aligned full-width disclosures; the expanded journey is optional. Documents exposes three consistent choices and defaults to the current requirement. Completed owns read-only warranty coverage and technical records, with service issues still actionable.
+
+Verification: 17 automated test files pass; production build passes. Browser verified stage selection, document switching, quotation preparation/cancel, four customer tabs, direct finance tracking links and completed warranty detail. No live customer record modified. Physical phone and screen reader remain unverified.

@@ -21,3 +21,10 @@ export function documentRules(p) {
   };
   return { stage, loan, pm, lead, classify };
 }
+
+// Visibility is stable; stage rules explain timing rather than hiding entry points.
+export function documentAvailable(p,key,prepared=false) {
+  if (prepared || key==='quote') return true;
+  const rules=documentRules(p);
+  return key==='feas'?rules.loan:key==='agreement'?rules.pm:false;
+}

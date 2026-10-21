@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import { pipelineUrl, needsAttention, recentProjects, currentStageTask } from './projectPipeline.js';
+assert.equal(pipelineUrl({id:'p1',stage:'completed'}),'/completed?p=p1');
+assert.equal(pipelineUrl({id:'p1',stage:'material_procurement'}),'/supply/bom?p=p1');
+assert.equal(pipelineUrl({id:'p1',stage:'pending_installation'}),'/p/p1?stage=open');
+assert.equal(pipelineUrl({id:'p1',stage:'leads'}),'/p/p1?tab=documents');
+assert.equal(pipelineUrl({id:'p1',stage:'pending_loans'}),'/p/p1?tab=finance');
+assert.equal(needsAttention({next:{status:'blocked'}}),true);
+assert.equal(needsAttention({next:{overdue:true}}),true);
+assert.equal(needsAttention({next:null}),false);
+const rows=[{id:'old',updatedAt:'2026-10-01'},{id:'new',updatedAt:'2026-10-22'}];
+assert.deepEqual(recentProjects(rows).map(r=>r.id),['new','old']);
+assert.equal(rows[0].id,'old');
+console.log('Pipeline destinations, attention and recent ordering passed');
+
+const tracks={sales:[{key:'quotation',status:'waiting_customer'}],supply:[{key:'installation',status:'in_progress'}]};
+assert.equal(currentStageTask(tracks,'pending_installation').key,'installation');
+assert.equal(currentStageTask(tracks,'leads').key,'quotation');
+assert.equal(currentStageTask(tracks,'completed'),null);
+assert.equal(currentStageTask(tracks,'pending_installation',['installation']),null);
+assert.equal(needsAttention({stageNext:null,next:{overdue:true}}),false);

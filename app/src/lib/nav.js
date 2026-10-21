@@ -24,7 +24,7 @@ export const MODULES = [
   { key: 'overview', section: 'main', tone: 'blue', page: 'overview', label: 'Overview', to: '/overview', icon: IconLayoutDashboard, chord: 'o', desc: 'Big picture: progress of all customers' },
   { key: 'projects', section: 'main', tone: 'violet', page: 'projects', label: 'Customers', to: '/projects', icon: IconUsers, chord: 'c', desc: 'Customer status and the next action', match: ['/p'] },
   // Quotation, Feasibility, Name check and DISCOM submission are documents: they open from Documents.
-  { key:'project_management',section:'main',tone:'blue',page:'project_management',label:'Project Management',to:'/project-management',icon:IconTable,desc:'All customer stages on one Kanban board'},
+  { key:'project_management',section:'main',tone:'blue',page:'project_management',label:'Project Management',to:'/project-management',icon:IconTable,desc:'Follow every project from enquiry to handover'},
   { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/grid', '/proposal'] },
   { key: 'my_commission', section: 'main', tone: 'green', page: 'my_commission', label: 'My commission', to: '/my-commission', icon: IconCoin, chord: 'm', desc: 'Commission earned, pending and paid' },
   { key: 'tally', section: 'main', tone: 'sun', page: 'tally', label: 'Truck tally', to: '/supply/tally', icon: IconTruck, chord: 'y', desc: 'Load check before the truck leaves', only: ['Installation Team'] },

@@ -1,3 +1,4 @@
+import { projectNext } from '../lib/projectPipeline.js';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { IconSearch, IconFilter, IconPlus, IconArrowRight, IconX } from '@tabler/icons-react';
@@ -25,7 +26,7 @@ export default function Projects() {
   const patch = (values) => { const next = new URLSearchParams(params); Object.entries(values).forEach(([k,v]) => v ? next.set(k,v) : next.delete(k)); setParams(next, { replace: true }); };
   useEffect(() => {
     let alive = true;
-    const load = () => { setError(''); api.listProjects({ q, board }).then((r) => { if (alive) setRows(r.filter(c=>c.stage!=='completed')); }).catch((e) => { if (alive) setError(e.message); }); };
+    const load = () => { setError(''); api.listProjects({ q, board }).then((r) => { if (alive) setRows(r.filter(c=>c.stage!=='completed').map(c=>({...c,next:projectNext(c)}))); }).catch((e) => { if (alive) setError(e.message); }); };
     load(); const unsub = api.subscribe(load);
     return () => { alive = false; unsub(); };
   }, [q, board, session.role, session.branch]);
@@ -56,7 +57,7 @@ export default function Projects() {
     <p className="directory-count" role="status">{visible.length} {visible.length === 1 ? 'customer' : 'customers'}{count ? ' matching your filters' : ''} · Recently updated first</p>
     {error ? <Empty hint="Refresh the page to try again.">{error}</Empty> : !rows ? <Empty>Loading customers…</Empty> : !visible.length ? <Empty hint="Try another view, clear your filters or search for a customer.">No customers in this view.</Empty> : <div className="customer-cards">{visible.slice(0,limit).map((r) => <article className="customer-summary" key={r.id}>
       <div className="customer-identity"><Avatar name={r.name} size="lg"/><div><Link to={`/p/${r.id}?from=${encodeURIComponent(params.toString())}`} className="customer-name">{r.name}</Link><p>{r.city} · {r.kwp} kWp</p><span className="customer-stage">{customerStage(r)}</span>{r.updatedAt&&<small className="customer-last-updated">Updated {fdateY(r.updatedAt)} · {ftime(r.updatedAt)}</small>}</div></div>
-      <div className="customer-next"><span className="detail-label">Next action</span><strong>{r.next?.text || 'All work complete'}</strong><small>{r.next?.owner || 'Ready for handover'}{r.next?.overdue ? ` · ${r.next.dueWords}` : ''}</small></div>
+      <div className="customer-next"><span className="detail-label">Next in this stage</span><strong>{r.next?.text || 'Review stage details'}</strong><small>{r.next?.owner || 'Confirm when ready to advance'}{r.next?.overdue ? ` · ${r.next.dueWords}` : ''}</small></div>
       {api.canDo('internal_money') && <div className="customer-due"><span className="detail-label">Payment due</span><strong>{r.due > 0 ? inr(r.due) : 'Nothing due'}</strong></div>}
       <Link className="customer-open" to={`/p/${r.id}?from=${encodeURIComponent(params.toString())}`}>Open customer <IconArrowRight size={17}/></Link>
     </article>)}</div>}

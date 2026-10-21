@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { documentRules } from './documentRules.js';
+import { documentAvailable, documentRules } from './documentRules.js';
 const customer = (stage, extra = {}) => ({ summary: { stage }, paymentMethod: 'Cash', ...extra });
 const lead = documentRules(customer('leads'));
 assert.equal(lead.classify('quote').bucket, 'current');
@@ -20,3 +20,10 @@ assert.equal(documentRules(customer('completed', { signature: { png: 'existing' 
 assert.equal(documentRules(customer('pending_loans', { docLinks: { feas: { url: 'saved' } } })).classify('feas').bucket, 'history');
 assert.equal(documentRules(customer('discom_submissions', { scheme: 'pm_surya_ghar', nameCheck: { match: true } })).classify('name').bucket, 'hidden');
 console.log('Stage, funding, scheme and document history checks passed');
+
+assert.equal(documentAvailable(customer('completed'),'quote'),true);
+assert.equal(documentAvailable(customer('leads',{paymentMethod:'Bank Solar Loan'}),'feas'),true);
+assert.equal(documentAvailable(customer('leads',{scheme:'pm_surya_ghar'}),'agreement'),true);
+assert.equal(documentAvailable(customer('pending_loans'),'feas'),false);
+assert.equal(documentAvailable(customer('pending_loans'),'feas',true),true);
+assert.equal(documentAvailable(customer('discom_submissions',{scheme:'non_subsidy'}),'agreement'),false);

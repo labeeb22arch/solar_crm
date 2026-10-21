@@ -7,13 +7,13 @@ import { IconArrowLeft,IconArrowRight,IconCheck,IconPhone,IconX } from '@tabler/
 import * as api from '../data/api.js';
 import { useData,useSession,useToast,fdateY,ftime } from '../lib/hooks.jsx';
 import { pageAllowed } from '../lib/access.js';
+import { pipelineWork, pipelineUrl } from '../lib/projectPipeline.js';
 import { nextStage } from '../lib/stageProgress.js';
 import { Avatar,Empty,LinkCRNs } from '../components/ui.jsx';
 import CustomerOverview from '../components/CustomerOverview.jsx';
 import CustomerFinance from '../components/CustomerFinance.jsx';
 import Documents from './Documents.jsx';
-import WarrantyRecords from './WarrantyRecords.jsx';
-const TABS=[['overview','Overview'],['finance','Finance'],['documents','Documents'],['history','History'],['warranty','Warranty']];
+const TABS=[['overview','Overview'],['finance','Finance'],['documents','Documents'],['history','History']];
 const aliases={work:'overview',details:'overview',technical:'overview',payments:'finance',updates:'history'};
 export default function Record(){
  const {id}=useParams();const [params,setParams]=useSearchParams();const session=useSession();const [p,loading]=useData(()=>api.getProject(id),[id]);const toast=useToast();
@@ -22,22 +22,23 @@ export default function Record(){
  const tabs=TABS.filter(([key])=>(key!=='finance'||api.canDo('internal_money'))&&(key!=='documents'||pageAllowed('documents',session.role)));
  const tab=tabs.some(([key])=>key===requested)?requested:'overview';
  const changeTab=(key)=>setParams((old)=>{const value=new URLSearchParams(old);value.set('tab',key);return value;},{replace:true});
- useEffect(()=>{setNote('');setPanel(false);},[id]);
+ useEffect(()=>{setNote('');setPanel(params.get('stage')==='open');},[id,params.get('stage')]);
  useEffect(()=>{if(p?.id)api.markOpened(id);},[id,p?.id]);
  useEffect(()=>{const node=progress.current?.querySelector('[aria-current="step"]');if(node)progress.current.scrollLeft=Math.max(0,node.offsetLeft-progress.current.offsetLeft-progress.current.clientWidth/2+node.offsetWidth/2);},[p?.summary?.stage]);
  const act=async(fn,message)=>{if(busy)return;setBusy(true);try{await fn();if(message)toast(message);}catch(e){toast(e.message);}finally{setBusy(false);}};
  if(loading||!p)return <div className="page"><Empty>Loading customer…</Empty></div>;
  if(p.notFound||p.forbidden)return <div className="page"><Empty>This customer is unavailable.</Empty><Link to="/projects">Back to customers</Link></div>;
- const s=p.summary;const index=api.meta.STAGES.findIndex((stage)=>stage.id===s.stage);const following=nextStage(api.meta.STAGES,s.stage);
+ const s=p.summary;const index=api.meta.STAGES.findIndex((stage)=>stage.id===s.stage);const following=nextStage(api.meta.STAGES,s.stage);const work=pipelineWork(s.stage);
  return <div className="customer-workspace"><Link className="back-customers" to={s.stage==='completed'?'/completed':params.get('from')?`/projects?${params.get('from')}`:'/projects'}><IconArrowLeft size={17}/>{s.stage==='completed'?'Back to Completed':'Back to customers'}</Link>
  <header className="workspace-heading"><Avatar name={p.name} size="xl"/><div className="workspace-title"><h1>{p.name}</h1><p>{p.city} · {p.kwp} kWp · {p.crn}</p></div><span className="workspace-status">{s.stageLabel}</span><div className="workspace-actions"><button className="btn" aria-expanded={panel} onClick={()=>setPanel(!panel)}>{panel?'Hide stage panel':'Current stage'}</button>{following&&api.canDo('edit')&&<button className="btn primary" onClick={()=>setMoveOpen(true)}>Move to next stage</button>}<a className="btn icon" aria-label={`Call ${p.name}`} href={`tel:+91${p.phone}`}><IconPhone size={16}/></a>{['Admin','Office Staff'].includes(session.role)&&<details className="record-more-actions"><summary className="btn">More</summary><button className="btn" onClick={()=>setTrashing(true)}>Move to Trash</button></details>}</div></header>
- <nav ref={progress} className="customer-stage-progress" aria-label="Customer stage progress"><ol>{api.meta.STAGES.map((stage,i)=><li key={stage.id} className={i<index?'passed':i===index?'current':''} aria-current={i===index?'step':undefined}><span className="stage-progress-dot">{i<index?<IconCheck size={12}/>:i+1}</span><span>{stage.id==='leads'?'Lead':stage.label}</span></li>)}</ol></nav>
+ <details className="workspace-journey"><summary>Project journey · Stage {index+1} of {api.meta.STAGES.length}<span>{s.stageLabel}{following?` → ${following.label}`:''}</span></summary> <nav ref={progress} className="customer-stage-progress" aria-label="Customer stage progress"><ol>{api.meta.STAGES.map((stage,i)=><li key={stage.id} className={i<index?'passed':i===index?'current':''} aria-current={i===index?'step':undefined}><span className="stage-progress-dot">{i<index?<IconCheck size={12}/>:i+1}</span><span>{stage.id==='leads'?'Lead':stage.label}</span></li>)}</ol></nav>
+</details>
+ {tab==='overview'&&<section className="pipeline-current-work"><div><span className="detail-label">Current work · {s.stageDays} days in stage</span><h2>{work.title}</h2></div>{['bom','completed'].includes(work.destination)?<Link className="btn" to={pipelineUrl(p)}>{work.action}</Link>:<button className="btn" onClick={()=>work.destination==='stage'?setPanel(true):changeTab(work.destination==='finance'&&!api.canDo('internal_money')?'overview':work.destination)}>{work.action}</button>}</section>}
  <div className="workspace-tabs" role="tablist" aria-label="Customer workspace">{tabs.map(([key,label])=><button key={key} role="tab" aria-selected={tab===key} className={tab===key?'selected':''} onClick={()=>changeTab(key)}>{label}</button>)}</div>
  <div className="customer-record-layout panel-hidden"><div className="customer-record-content" role="tabpanel" aria-label={tabs.find(([key])=>key===tab)?.[1]}>
  {tab==='overview'&&<CustomerOverview key={p.id} project={p}/>}
  {tab==='finance'&&<CustomerFinance key={p.id} project={p}/>}
  {tab==='documents'&&<Documents customerId={p.id} embedded/>}
- {tab==='warranty'&&<WarrantyRecords customerId={p.id} embedded coverageOnly/>}
  {tab==='history'&&<section className="card card-b"><div className="row" style={{justifyContent:'space-between',gap:12}}><h2>Customer history</h2><select className="select" value={historyType} onChange={(e)=>setHistoryType(e.target.value)} aria-label="History type">{[['all','All updates'],['note','Notes'],['payment','Payments'],['document','Documents'],['status','Stage & task changes']].map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></div>{(api.canDo('note')||api.canDo('edit'))&&<form className="update-composer" onSubmit={(e)=>{e.preventDefault();act(async()=>{await api.addNote(id,'note',note.trim());setNote('');},'Note saved');}}><textarea className="input" rows={3} aria-label="Customer note" placeholder="Add a note for the team" value={note} onChange={(e)=>setNote(e.target.value)}/><button className="btn primary" disabled={busy||!note.trim()}>Save note</button></form>}<div className="updates-feed">{[...(p.timeline||[])].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).filter((event)=>historyType==='all'||event.type===historyType).map((event,i)=><article key={i}><div><p><strong>{event.by||'Team'}</strong><time>{fdateY(event.at)} · {ftime(event.at)}</time></p><div><LinkCRNs text={event.text}/></div></div></article>)}</div></section>}
  </div>{panel&&<><div className="overlay" onClick={()=>setPanel(false)}/><StagePanel key={p.id+s.stage} project={p} busy={busy} act={act} onClose={()=>setPanel(false)} changeTab={changeTab} following={following}/></>}</div>
  {moveOpen&&<StageMoveDialog project={p} onClose={()=>setMoveOpen(false)}/>}
@@ -45,7 +46,7 @@ export default function Record(){
  </div>;
 }
 function StagePanel({project:p,busy,act,onClose,changeTab,following}){
- const [confirmMove,setConfirmMove]=useState(false);const s=p.summary;const next=s.next;const [assigning,setAssigning]=useState(false);const loan=['Bank Solar Loan','Personal Loan'].includes(p.paymentMethod);
+ const [confirmMove,setConfirmMove]=useState(false);const s=p.summary;const next=s.stageNext;const [assigning,setAssigning]=useState(false);const loan=['Bank Solar Loan','Personal Loan'].includes(p.paymentMethod);
  const drawer=useRef(null);useModalFocus(drawer,onClose,busy,!confirmMove);
  const needed=s.stage==='leads'?[['Phone',p.phone],['City',p.city]]:s.stage==='pending_loans'?[['Payment arrangement',p.paymentMethod],...(loan?[['Bank name',p.bank]]:[])]:s.stage==='material_procurement'?[['Customer BOM',p.bomVersions?.length]]:s.stage==='pending_installation'?[['Installation team',p.team],['Installation date',p.installDate]]:s.stage==='post_installation_docs'?[['Panel serials',p.serials?.modules?.length],['Inverter serial',p.serials?.inverter]]:s.stage==='discom_submissions'?[['Consumer number',p.consumerNo],...(p.scheme==='pm_surya_ghar'?[['Portal ID',p.portalId],['Customer signature',p.signature?.png]]:[])]:[];
  const primary=s.stage==='leads'?['Prepare quotation',()=>changeTab('documents')]:s.stage==='pending_loans'?['Review finance',()=>changeTab('finance')]:s.stage==='material_procurement'?['Open customer BOM',null,`/supply/bom?p=${p.id}`]:s.stage==='pending_installation'?['Assign team / date',()=>setAssigning(!assigning)]:['post_installation_docs','discom_submissions'].includes(s.stage)?['Open documents',()=>changeTab('documents')]:['Review customer information',()=>changeTab('overview')];

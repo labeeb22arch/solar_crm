@@ -1,3 +1,4 @@
+import { currentStageTask } from '../lib/projectPipeline.js';
 import {archiveCustomer,restoreArchivedCustomer} from '../lib/customerArchive.js';
 import {documentInboxEntry} from '../lib/documentInbox.js';
 import {cleanNameVerification} from '../lib/nameVerification.js';
@@ -649,6 +650,17 @@ function summary(p, role = session.role) {
   const tp = {};
   for (const t of TRACKS) tp[t.key] = trackProgress(p, t.key, hidden);
   const d = describe(p, role);
+  const stage = stageInfo(p);
+  const task = currentStageTask(p.tracks, stage.stage, hidden);
+  let stageNext = null;
+  if(task) {
+    const meta = META[task.key] || {sla:5,own:'ops',do:task.label};
+    const base = task.updatedAt || stage.stageAt;
+    const due = new Date(Date.parse(base) + meta.sla*DAY).toISOString();
+    const dueIn = daysUntil(due);
+    stageNext = {...task,text:fill(meta.do,p),owner:ownerName(p,meta.own),due,overdue:dueIn<0,dueWords:dueIn<0?`${plural(-dueIn,'day')} late`:when(due)};
+  }
+
   const oi = openItems(p, hidden);
   return {
     id: p.id, crn: p.crn, name: p.name, contact: p.contact, phone: p.phone, city: p.city, address: p.address, branch: p.branch, type: p.type, kwp: p.kwp, value: p.value,
@@ -657,7 +669,7 @@ function summary(p, role = session.role) {
     team: p.team, teamName: TEAMS.find((t) => t.id === p.team)?.name, technician: p.technician,
     updatedAt: lastCustomerUpdate(p), createdAt: p.createdAt, ageDays: daysSince(p.createdAt), tracks: tp, worst: oi[0] ? oi[0].status : 'done', openCount: oi.filter((x) => x.status !== 'not_started').length,
     installDate: p.installDate, installStatus: item(p, 'supply', 'installation').status, nameMismatch: !p.nameCheck.match && !p.nameCheck.resolution,
-    subsidyStatus: subsidyStatus(p), loan: p.loan, ...stageInfo(p), ...d,
+    subsidyStatus: subsidyStatus(p), loan: p.loan, ...stage, ...d, stageNext,
   };
 }
 function log(p, entry) {
