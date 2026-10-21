@@ -12,7 +12,7 @@ import { MODULES, SUBPAGES, modulesFor, subpagesFor } from '../lib/nav.js';
 import { ROLE_INFO } from '../lib/access.js';
 import { SignLinkButton, signLabel } from '../components/SignLink.jsx';
 import { AgreementPreview } from '../docs/agreement/AgreementPreview.jsx';
-import { agreementData, todayDdMmYyyy, DEFAULT_PAYMENT_TERMS } from '../docs/agreement/data.js';
+import { agreementData, todayDdMmYyyy } from '../docs/agreement/data.js';
 
 export function SubNav({ parent }) {
   const session = useSession();
@@ -157,7 +157,7 @@ export function DiscomDocs() {
 function AgreementScreen({ pid, onBack }) {
   const [p] = useData(() => api.getProject(pid), [pid]);
   const [assets] = useData(() => api.getCompanyAssets(), []);
-  const [opts, setOpts] = useState({ executionDate: todayDdMmYyyy(), paymentTerms: DEFAULT_PAYMENT_TERMS, showHighlights: true });
+  const [opts, setOpts] = useState({ executionDate: todayDdMmYyyy(), showHighlights: true });
   if (!p || !assets) return <div className="page"><Empty>Loading…</Empty></div>;
   if (p.notFound || p.forbidden) return <div className="page"><Empty>This customer is not in your list.</Empty><button className="btn" onClick={onBack}>Back to the list</button></div>;
   const data = agreementData(p, assets, opts);
@@ -168,7 +168,6 @@ function AgreementScreen({ pid, onBack }) {
       <PageHead title={`Agreement for ${p.name}`} sub="The PM Surya Ghar model agreement (4 pages) filled in for this customer. Yellow marks show the customer's details; they are left out of the PDF and the printout." />
       <div className="ag-fields card card-b">
         <label className="stack" style={{ gap: 4 }}><span className="faint small">Agreement date</span><input className="input" value={opts.executionDate} onChange={(e) => setOpts({ ...opts, executionDate: e.target.value })} placeholder="dd-mm-yyyy" /></label>
-        <label className="stack grow" style={{ gap: 4 }}><span className="faint small">Payment terms (point 19)</span><textarea className="input" rows={2} value={opts.paymentTerms} onChange={(e) => setOpts({ ...opts, paymentTerms: e.target.value })} /></label>
         <div className="stack" style={{ gap: 6 }}>
           <span className="faint small">Customer signature</span>
           <span className={'sign-state ' + (p.signature?.png ? 'signed' : p.signRequest?.status === 'sent' ? 'sent' : 'none')}>{sign}</span>
