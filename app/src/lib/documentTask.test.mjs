@@ -16,6 +16,10 @@ assert.equal(documentTaskState({documentDownloads:{feas:{}}},'feas',now),'upload
 assert.equal(documentTaskState({docLinks:{feas:{url:'https://example.com'}}},'feas',now),'saved');
 console.log('Document next-action lifecycle checks passed');
 
-assert.deepEqual(preparedDocumentKeys({proposal:{},signRequest:{},documentDownloads:{feas:{}},docLinks:{name:{url:'saved'}}}),['quote','feas','agreement','name']);
+assert.deepEqual(preparedDocumentKeys({proposal:{},signRequest:{},documentDownloads:{feas:{}},docLinks:{name:{url:'saved'}}}),['quote','feas','agreement']);
 assert.equal(documentTaskState({docLinks:{quote:{url:'https://example.com'}}},'quote',now),'saved');
 assert.equal(documentTaskState({documentDownloads:{name:{}}},'name',now),'upload');
+
+assert.equal(preparedDocumentKeys({docLinks:{name:{url:"https://example.com"}}}).length,0,"Name declarations do not enter Documents");
+
+assert.deepEqual(preparedDocumentKeys({quotation:{status:"sent"}}),["quote"],"Existing quotations stay accessible in Documents");

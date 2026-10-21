@@ -79,16 +79,6 @@ export default function Documents({ customerId, embedded = false }) {
       missing: agMissing, action: 'Create & download', core: true, extra: !signed && api.canDo('edit') ? <SignLinkButton pid={p.id} className="btn sm" small /> : null,
     });
 
-    const nc = p.nameCheck || {};
-    const mismatch = !nc.match && !nc.resolution;
-    out.push({
-      key: 'name', icon: IconId, title: 'Name declaration (bill vs bank)', page: 'name_check', to: `/name-check?p=${p.id}`,
-      desc: 'Declares that the electricity-bill name and the bank-account name are the same person, for the subsidy.',
-      state: mismatch ? 'todo' : 'done',
-      status: mismatch ? 'Names do not match yet' : nc.resolution ? `Resolved: ${nc.resolution}` : 'Names match',
-      missing: mismatch ? [`Bill: ${nc.discomName || '—'}`, `Bank: ${nc.bankName || '—'}`] : [], action: mismatch ? 'Fix the name & create' : 'Create declaration', core: true,
-    });
-
     /* Bills and invoices are disabled.
     const inv = (invoices || []).find((r) => r.pid === p.id);
     out.push({
@@ -110,7 +100,7 @@ export default function Documents({ customerId, embedded = false }) {
       missing: drive.filter((d) => !d.present).map((d) => d.slot), action: 'Open customer record',
     });
     // The four documents first, in this order; everything else after.
-    const ORDER = ['quote', 'feas', 'name', 'agreement'];
+    const ORDER = ['quote', 'feas', 'agreement'];
     return [...ORDER.map((k) => out.find((d) => d.key === k)), ...out.filter((d) => !ORDER.includes(d.key))].filter(Boolean).map((d) => { const rule = documentRules(p).classify(d.key); if (d.key === 'invoice' && d.disabled) { rule.bucket = 'later'; rule.reason = 'Available after payment or commissioning.'; } return { ...d, ...rule, disabled: d.disabled || rule.bucket === 'later', extra: rule.bucket === 'current' ? d.extra : null }; }).filter((d) => d.bucket !== 'hidden');
   }, [ok, p, assets]);
 
@@ -120,7 +110,7 @@ export default function Documents({ customerId, embedded = false }) {
 
   return (
     <div className={embedded ? "embedded-documents" : "page"}>
-      {!embedded && <PageHead title="Document maker" sub="Choose a customer. Create the documents needed for their current stage, then track sent links and returned documents." />}
+      {!embedded && <PageHead title="Document maker" sub="Prepare, share and save this customer’s documents." />}
       {!embedded && <button className="btn" style={{marginBottom:16}} onClick={()=>setParams(params.get('queue')?{queue:params.get('queue')}:{})}>← Document customer cards</button>}
       <div className="docs-embedded-layout">
         <div>
@@ -133,7 +123,7 @@ export default function Documents({ customerId, embedded = false }) {
                   <Avatar name={p.name} size="lg" />
                   <CustName id={p.id} name={p.name} crn={p.crn} meta={`${p.city} · ${p.kwp} kWp · ${p.type}`} />
                   <StageChip r={p.summary} />
-                  <span className="docs-score"><span className="docs-meter" aria-hidden="true"><i style={{ width: `${(ready / Math.max(1, docs.length)) * 100}%` }} /></span><span><b>{ready}</b> of {docs.length} ready</span></span>
+
                 </div>}
                 <div className="simple-document-list">{docs.filter((d)=>(d.bucket==='current'||preparedDocumentKeys(p).includes(d.key)||d.key==='quote'&&preparedDocumentKeys(p).includes('quote'))&&!['drive','proposal'].includes(d.key)).map((d)=><section className="card card-b" key={d.key}><h2>{d.key==='quote'?'Quotation':d.title}</h2><DocumentTask customerId={p.id} docKey={d.key}/></section>)}</div>
                 {!docs.some((d)=>(d.bucket==='current'||preparedDocumentKeys(p).includes(d.key))&&!['drive','proposal'].includes(d.key))&&<Empty>No new documents required at this stage.</Empty>}

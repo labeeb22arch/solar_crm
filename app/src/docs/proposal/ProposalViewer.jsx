@@ -51,15 +51,15 @@ export function ProposalViewer({ snap, accepted, assets, extraActions, title }) 
     <div className="pp-viewer">
       <div className="ag-toolbar">
         <span className="row" style={{ fontWeight: 650 }}><IconFileText size={17} /> {title || `Proposal (${total} pages)`}</span>
-        <div className="seg" role="group" aria-label="Go to page">{Array.from({ length: total }, (_, i) => <button key={i} onClick={() => jump(i + 1)} title={`Page ${i + 1}`}>{i + 1}</button>)}</div>
+        <div className="seg" role="group" aria-label="Go to page">{Array.from({ length: total }, (_, i) => <button type="button" key={i} onClick={() => jump(i + 1)} title={`Page ${i + 1}`}>{i + 1}</button>)}</div>
         <div className="ag-tools">
           <span className="row ag-ctl">
-            <button className="btn sm ghost icon" onClick={() => setZoom(Math.max(40, zoom - 10))} aria-label="Zoom out"><IconZoomOut size={15} /></button>
+            <button type="button" className="btn sm ghost icon" onClick={() => setZoom(Math.max(40, zoom - 10))} aria-label="Zoom out"><IconZoomOut size={15} /></button>
             <span className="mono small" style={{ width: 38, textAlign: 'center' }}>{zoom}%</span>
-            <button className="btn sm ghost icon" onClick={() => setZoom(Math.min(140, zoom + 10))} aria-label="Zoom in"><IconZoomIn size={15} /></button>
+            <button type="button" className="btn sm ghost icon" onClick={() => setZoom(Math.min(140, zoom + 10))} aria-label="Zoom in"><IconZoomIn size={15} /></button>
           </span>
           {extraActions}
-          <button className="btn primary" onClick={download} disabled={busy}>{busy ? <IconLoader2 size={15} className="spin" /> : <IconDownload size={15} />} {busy ? 'Making PDF…' : 'Download PDF'}</button>
+          <button type="button" className="btn primary" onClick={download} disabled={busy}>{busy ? <IconLoader2 size={15} className="spin" /> : <IconDownload size={15} />} {busy ? 'Making PDF…' : 'Download PDF'}</button>
         </div>
       </div>
       <div ref={boxRef} className="pp-scroll">
