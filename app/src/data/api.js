@@ -1,3 +1,4 @@
+import {archiveCustomer,restoreArchivedCustomer} from '../lib/customerArchive.js';
 import {documentInboxEntry} from '../lib/documentInbox.js';
 import {cleanNameVerification} from '../lib/nameVerification.js';
 import { paymentMilestones, cleanPaymentPlan } from '../lib/customerMilestones.js';
@@ -8,7 +9,7 @@ import { indiaDay, cleanReceipt, expectedReceipts } from '../lib/receipts.js';
 import { makeBOMVersion, changeBOMVersion } from '../lib/procurement.js';
 import { TRACKING_STATUSES, trackingStatus, eligibleTracking, appendTracking, LOAN_DOCS } from '../lib/financeTracking.js';
 import { documentRules, SCHEMES } from '../lib/documentRules.js';
-import { nextStage } from '../lib/stageProgress.js';
+import { nextStage,confirmedNextStage } from '../lib/stageProgress.js';
 import { recordWarrantyIssue } from '../lib/warrantyIssues.js';
 import { warrantyRecord, cleanWarranty } from '../lib/warranty.js';
 import { changeDelivery, combineBOM } from '../lib/delivery.js';
@@ -629,8 +630,8 @@ function scopeFn(s) {
     }
   };
 }
-function scoped(s = session) { return load().projects.filter(scopeFn(s)); }
-const inScope = (p, s = session) => !!p && scopeFn(s)(p);
+function scoped(s = session) { return load().projects.filter(p=>!p.deletedAt&&scopeFn(s)(p)); }
+const inScope = (p, s = session) => !!p && !p.deletedAt && scopeFn(s)(p);
 
 function subsidyStatus(p) {
   if (p.type !== 'Residential') return `Not applicable (${p.type.toLowerCase()})`;
@@ -1565,11 +1566,10 @@ export async function saveWarrantyIssue(pid, issueId, input) {
   persist(); return delay(true);
 }
 
-export async function moveToNextStage(pid) {
+export async function moveToNextStage(pid, expectedStage) {
   const p = find(pid);
   if (!p || !inScope(p) || !can(session.role, 'edit')) deny();
-  const next = nextStage(STAGES, stageOf(p));
-  if (!next) throw new Error('This customer is already at the final stage');
+  const next = confirmedNextStage(STAGES,stageOf(p),expectedStage);
   return setStage(pid, next.id);
 }
 export async function getWarranty(pid) {
@@ -1698,10 +1698,10 @@ export async function saveReturnedDocument(pid, kind, token, url) {
 
 export async function financeDashboard() {
   if (!can(session.role,'internal_money')) deny();
-  const projects=scoped(); const today=indiaDay();
+  const projects=load().projects.filter(scopeFn(session)); const today=indiaDay();
   const receipts=projects.flatMap((p)=>(p.payments||[]).map((payment,index)=>({...payment,id:payment.id||p.id+'-'+index,pid:p.id,name:p.name,crn:p.crn,day:indiaDay(payment.date)}))).sort((a,b)=>b.day.localeCompare(a.day));
-  const expected=projects.flatMap((p)=>expectedReceipts(p).map((entry)=>({...entry,pid:p.id,name:p.name,crn:p.crn,dueNow:dueMilestones(p).some((m)=>m===p.schedule[entry.index])})));
-  return {today,receipts,expected,receivedToday:Math.round(receipts.filter((r)=>r.day===today).reduce((s,r)=>s+r.amount,0)*100)/100,dueNow:projects.reduce((s,p)=>s+dueNow(p),0),outstanding:projects.reduce((s,p)=>s+Math.max(0,p.value-paid(p)),0),customers:projects.map((p)=>({id:p.id,name:p.name,crn:p.crn,phone:p.phone,city:p.city,scheme:p.scheme||'',value:p.value,paid:paid(p),balance:Math.max(0,p.value-paid(p))}))};
+  const expected=projects.filter(p=>!p.deletedAt).flatMap((p)=>expectedReceipts(p).map((entry)=>({...entry,pid:p.id,name:p.name,crn:p.crn,dueNow:dueMilestones(p).some((m)=>m===p.schedule[entry.index])})));
+  return {today,receipts,expected,receivedToday:Math.round(receipts.filter((r)=>r.day===today).reduce((s,r)=>s+r.amount,0)*100)/100,dueNow:projects.filter(p=>!p.deletedAt).reduce((s,p)=>s+dueNow(p),0),outstanding:projects.filter(p=>!p.deletedAt).reduce((s,p)=>s+Math.max(0,p.value-paid(p)),0),customers:projects.filter(p=>!p.deletedAt).map((p)=>({id:p.id,name:p.name,crn:p.crn,phone:p.phone,city:p.city,scheme:p.scheme||'',value:p.value,paid:paid(p),balance:Math.max(0,p.value-paid(p))}))};
 }
 export async function addCustomerReceipt(pid,form,requestId) {
   const p=find(pid);
@@ -1779,4 +1779,20 @@ export async function saveLoanNameVerification(pid,input) {
  setItem(p,'grid','name_check',checked.match||checked.resolution?'done':'blocked');
  p.verification||={};p.verification.account_name={checked:!!(checked.match||checked.resolution),at:verifiedAt,by:verifiedBy};
  log(p,{type:'note',text:`Loan bill/bank name check: ${checked.match?'Names match':checked.resolution?'Verified as same customer':'Mismatch requires attention'}`});persist();return delay(true);
+}
+
+// Soft deletion retains the entire JSON record; restoring never recreates customer data.
+export async function listTrash(){
+ if(!['Admin','Office Staff','Finance'].includes(session.role))deny();
+ return delay(load().projects.filter(p=>p.deletedAt&&scopeFn(session)(p)).map(p=>({id:p.id,name:p.name,crn:p.crn,deletedAt:p.deletedAt,deletedBy:p.deletedBy,reason:p.deletedReason})).sort((a,b)=>b.deletedAt.localeCompare(a.deletedAt)));
+}
+export async function trashCustomer(pid,reason){
+ const p=find(pid);if(!p||!inScope(p)||!['Admin','Office Staff'].includes(session.role))deny();
+ Object.assign(p,archiveCustomer(p,{reason,at:nowIso(),by:auth?.name||identityLabel()||session.role}));
+ log(p,{type:'status',text:`Moved to Trash: ${p.deletedReason}`});persist();return delay(true);
+}
+export async function restoreCustomer(pid){
+ const p=find(pid);if(!p||!p.deletedAt||!scopeFn(session)(p)||!['Admin','Office Staff'].includes(session.role))deny();
+ const restored=restoreArchivedCustomer(p,{at:nowIso(),by:auth?.name||session.role});delete p.deletedAt;delete p.deletedBy;delete p.deletedReason;Object.assign(p,restored);
+ log(p,{type:'status',text:'Customer restored from Trash'});persist();return delay(true);
 }

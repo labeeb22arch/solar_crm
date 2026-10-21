@@ -7,8 +7,8 @@ import { pageAllowed } from '../lib/access.js';
 import { Empty, Avatar } from '../components/ui.jsx';
 import { customerStage, isInstalled, needsAttention } from '../lib/customerView.js';
 
-const TABS = [['attention', 'Needs attention'], ['active', 'Active customers'], ['installed', 'Finished installations']];
-const belongs = (r, tab) => tab === 'all' ? true : tab === 'attention' ? needsAttention(r) : tab === 'installed' ? isInstalled(r) : !!r.next || !isInstalled(r);
+const TABS = [['active', 'Active customers'], ['attention', 'Needs attention']];
+const belongs = (r, tab) => tab === 'attention' ? needsAttention(r) : r.stage !== 'completed';
 export default function Projects() {
   const session = useSession();
   const [params, setParams] = useSearchParams();
@@ -25,7 +25,7 @@ export default function Projects() {
   const patch = (values) => { const next = new URLSearchParams(params); Object.entries(values).forEach(([k,v]) => v ? next.set(k,v) : next.delete(k)); setParams(next, { replace: true }); };
   useEffect(() => {
     let alive = true;
-    const load = () => { setError(''); api.listProjects({ q, board }).then((r) => { if (alive) setRows(r); }).catch((e) => { if (alive) setError(e.message); }); };
+    const load = () => { setError(''); api.listProjects({ q, board }).then((r) => { if (alive) setRows(r.filter(c=>c.stage!=='completed')); }).catch((e) => { if (alive) setError(e.message); }); };
     load(); const unsub = api.subscribe(load);
     return () => { alive = false; unsub(); };
   }, [q, board, session.role, session.branch]);
@@ -38,16 +38,16 @@ export default function Projects() {
   const partners = [...new Set((rows || []).map((r) => r.partner))].filter(Boolean).sort();
   const count = [stage, payment, partner].filter(Boolean).length;
   return <div className="customer-directory">
-    <header className="directory-heading"><div><h1>Customers</h1><p>Know where every customer stands.</p></div>
+    <header className="directory-heading"><div><h1>Customers</h1></div>
       {pageAllowed('add_lead', session.role) && <Link className="btn primary" to="/add-lead"><IconPlus size={18}/>Add customer</Link>}
     </header>
     <div className="directory-search"><label className="directory-searchbox"><IconSearch size={20}/><input value={q} onChange={(e) => patch({ q:e.target.value })} placeholder="Search by name, phone, city or customer number…" aria-label="Search customers"/>{q && <button className="btn icon ghost" onClick={() => patch({q:''})} aria-label="Clear search"><IconX size={16}/></button>}</label>
       <button className={'btn' + (count ? ' on' : '')} onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="customer-filters"><IconFilter size={18}/>Filter{count ? ` (${count})` : ''}</button>
     </div>
     <div className="customer-tabs" role="tablist" aria-label="Customer views">{TABS.map(([key,label]) => <button key={key} role="tab" aria-selected={!board && tab === key} className={!board && tab === key ? 'selected' : ''} onClick={() => patch({tab:key,board:'',view:''})}>{label}<span>{filtered.filter((r) => belongs(r,key)).length}</span></button>)}</div>
-    <nav className="customer-stage-filters" aria-label="Filter customers by stage"><button className={!stage?'selected':''} aria-pressed={!stage} onClick={()=>patch({stage:''})}>All stages <span>{stageRows.length}</span></button>{api.meta.STAGES.map((s)=><button key={s.id} className={stage===s.id?'selected':''} aria-pressed={stage===s.id} onClick={()=>patch({stage:s.id,tab:'all',board:'',view:''})}>{s.label}<span>{stageRows.filter((r)=>r.stage===s.id).length}</span></button>)}</nav>
+    <nav className="customer-stage-filters" aria-label="Filter customers by stage"><button className={!stage?'selected':''} aria-pressed={!stage} onClick={()=>patch({stage:''})}>All stages <span>{stageRows.length}</span></button>{api.meta.STAGES.filter(s=>s.id!=='completed').map((s)=><button key={s.id} className={stage===s.id?'selected':''} aria-pressed={stage===s.id} onClick={()=>patch({stage:s.id,tab:'all',board:'',view:''})}>{s.label}<span>{stageRows.filter((r)=>r.stage===s.id).length}</span></button>)}</nav>
     {filtersOpen && <div className="directory-filters" id="customer-filters">
-      <label>Stage<select className="select" value={stage} onChange={(e) => patch({stage:e.target.value})}><option value="">All stages</option>{api.meta.STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
+
       <label>Payment<select className="select" value={payment} onChange={(e) => patch({payment:e.target.value})}><option value="">Any payment status</option><option value="due">Payment due</option></select></label>
       <label>Partner<select className="select" value={partner} onChange={(e) => patch({partner:e.target.value})}><option value="">All partners</option>{partners.map((p) => <option key={p}>{p}</option>)}</select></label>
       <button className="btn ghost" onClick={() => patch({stage:'',payment:'',partner:'',view:''})}>Clear filters</button>

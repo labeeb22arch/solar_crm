@@ -37,4 +37,13 @@ Provide the two `VITE_SUPABASE_*` variables in your hosting build environment or
 
 Database setup scripts are in `app/supabase/`; local credentials and environment files are excluded. Example data scripts in `app/supabase/examples/` contain illustrative values only.
 
-This is the current working CRM, including customer records, document workflows, procurement, installations, Finance, loan/subsidy tracking and warranty screens. Some cloud operations require their matching SQL/RPC setup; review the SQL scripts before enabling those operations. The requested completed-customer/Warranty separation and recoverable Trash are not implemented yet.
+This is the current working CRM, including customer records, document workflows, procurement, installations, Finance, loan/subsidy tracking and warranty screens. Some cloud operations require their matching SQL/RPC setup; review the SQL scripts before enabling those operations. Active customers are separate from Completed (warranty/service), and Trash supports recoverable removal. Project Management is a Kanban view with confirmed next-stage moves.
+
+## Product and engineering decisions
+
+- [Architecture decision records](docs/adr/README.md)
+- [Design system](docs/design/DESIGN-SYSTEM.md)
+- [Current customer-workspace design session](docs/design/WORKING-SESSION.md)
+- [Engineering follow-up](docs/engineering/BACKLOG.md)
+
+Run `npm test` from the repository root for the domain regression suite.

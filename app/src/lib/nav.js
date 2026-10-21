@@ -1,5 +1,5 @@
 import {
-  IconClipboardList, IconTruckDelivery, IconReceipt, IconTool,
+  IconTrash,IconClipboardList, IconTruckDelivery, IconReceipt, IconTool,
   IconHome, IconLayoutDashboard, IconTable, IconId, IconFileInvoice, IconSolarPanel2, IconScan, IconCalendarEvent, IconPackages, IconBolt,
   IconCurrencyRupee, IconShieldCheck, IconUsers, IconActivity, IconMessages, IconFiles, IconStack2, IconCoin, IconTruck,
 } from '@tabler/icons-react';
@@ -13,6 +13,7 @@ export const NAV_SECTIONS = [
   { key: 'ops', label: 'Operations' },
   { key: 'money', label: 'Finance' },
   { key: 'team', label: 'Team' },
+  { key: 'archive', label: null },
 ];
 export const MODULES = [
   { key: 'today', section: 'main', tone: 'orange', page: 'today', label: 'Today', to: '/today', icon: IconHome, chord: 't', desc: 'What is happening at Sunpay today, and your tasks' },
@@ -23,6 +24,7 @@ export const MODULES = [
   { key: 'overview', section: 'main', tone: 'blue', page: 'overview', label: 'Overview', to: '/overview', icon: IconLayoutDashboard, chord: 'o', desc: 'Big picture: progress of all customers' },
   { key: 'projects', section: 'main', tone: 'violet', page: 'projects', label: 'Customers', to: '/projects', icon: IconUsers, chord: 'c', desc: 'Customer status and the next action', match: ['/p'] },
   // Quotation, Feasibility, Name check and DISCOM submission are documents: they open from Documents.
+  { key:'project_management',section:'main',tone:'blue',page:'project_management',label:'Project Management',to:'/project-management',icon:IconTable,desc:'All customer stages on one Kanban board'},
   { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/grid', '/proposal'] },
   { key: 'my_commission', section: 'main', tone: 'green', page: 'my_commission', label: 'My commission', to: '/my-commission', icon: IconCoin, chord: 'm', desc: 'Commission earned, pending and paid' },
   { key: 'tally', section: 'main', tone: 'sun', page: 'tally', label: 'Truck tally', to: '/supply/tally', icon: IconTruck, chord: 'y', desc: 'Load check before the truck leaves', only: ['Installation Team'] },
@@ -31,7 +33,7 @@ export const MODULES = [
   { key: 'inventory', workspaceOnly: true, section: 'ops', tone: 'sun', page: 'inventory', label: 'Inventory', to: '/supply/inventory', icon: IconPackages, chord: 's', desc: 'Stock in the warehouse and what is reserved' },
   { key: 'bom', workspaceOnly: true, section: 'ops', tone: 'violet', page: 'bom', label: 'Procurement', to: '/supply/bom', icon: IconClipboardList, chord: 'r', desc: 'Bill of materials and what to order for each job' },
   { key: 'dispatch', workspaceOnly: true, section: 'ops', tone: 'blue', page: 'challan', label: 'Dispatch', to: '/supply/challan', icon: IconTruckDelivery, chord: 'd', desc: 'Delivery challans and truck tally', match: ['/supply/tally'], except: ['Installation Team'] },
-  { key: 'warranty', section: 'ops', tone: 'green', page: 'warranty', label: 'Warranty', to: '/warranty', icon: IconShieldCheck, chord: 'w', desc: 'Warranty dates and registration' },
+  { key: 'warranty', section: 'ops', tone: 'green', page: 'warranty', label: 'Completed', to: '/completed', match: ['/warranty'], icon: IconShieldCheck, chord: 'w', desc: 'Warranty dates and registration' },
   // { key: 'vendors', section: 'ops', tone: 'slate', page: 'inventory', label: 'Vendors', to: null, icon: IconBuildingFactory2, soon: true, desc: 'Vendor list and purchase orders (coming soon)' },
   { key: 'finance', section: 'money', tone: 'green', page: 'finance', label: 'Finance overview', to: '/finance', icon: IconCurrencyRupee, desc: 'Receipts, expected payments, loans and subsidy' },
   { key: 'payments_received', section: 'money', tone: 'green', page: 'finance', label: 'Payments received', to: '/finance/received', icon: IconReceipt },
@@ -44,6 +46,7 @@ export const MODULES = [
   // { key: 'money', section: 'money', tone: 'green', page: 'invoices', label: 'Bills & invoices', to: '/money/invoices', icon: IconReceipt, chord: 'p', desc: 'Invoices for every customer' },
   { key: 'cp_comm', section: 'money', tone: 'sun', page: 'cp_comm', label: 'Partner commission', to: '/money/cp', icon: IconCoin, chord: 'k', desc: 'Commission for channel partners and dealers' },
   { key: 'inst_comm', section: 'money', tone: 'orange', page: 'inst_comm', label: 'Installation commission', to: '/money/install', icon: IconTool, chord: 'l', desc: 'Commission for installation teams' },
+  {key:'trash',section:'archive',tone:'slate',page:'trash',label:'Trash',to:'/trash',icon:IconTrash,desc:'Recover removed customers'},
   // Team.
   { key: 'team', section: 'team', tone: 'blue', page: 'attendance', label: 'Team', to: '/team/attendance', icon: IconUsers, chord: 'u', desc: 'Attendance, users and roles', match: ['/team'] },
   { key: 'chat', section: 'team', tone: 'rose', page: 'chat', label: 'Team chat', to: '/chat', icon: IconMessages, chord: 'b', desc: 'Shared chat for Admin and Office staff' },

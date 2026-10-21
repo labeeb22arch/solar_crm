@@ -1,0 +1,342 @@
+/* Customer workspace and project management: ADR 0001–0002 */
+.customer-directory,
+.customer-workspace {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 22px 28px 40px;
+}
+.directory-heading {
+  margin-bottom: 16px;
+}
+.directory-heading h1 {
+  font-size: 28px;
+}
+.directory-search {
+  margin-bottom: 14px;
+}
+.customer-tabs {
+  margin-bottom: 12px;
+}
+.customer-stage-filters {
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+}
+.directory-count {
+  margin: 8px 0 12px;
+}
+.customer-summary {
+  padding: 16px 18px;
+  gap: 18px;
+}
+.customer-identity {
+  flex: 1.2;
+}
+.customer-identity p {
+  margin: 3px 0 5px;
+}
+.customer-next {
+  padding-left: 18px;
+  gap: 5px;
+}
+.customer-open {
+  white-space: nowrap;
+}
+.back-customers {
+  margin-bottom: 16px;
+}
+.customer-workspace .workspace-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.workspace-heading .av-xl {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+.customer-workspace .workspace-title {
+  min-width: 0;
+}
+.customer-workspace .workspace-title h1 {
+  font-size: 24px;
+  line-height: 1.3;
+}
+.customer-workspace .workspace-title p {
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+.workspace-status {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+  margin-top: -5px;
+}
+.customer-workspace .workspace-actions {
+  grid-column: 3;
+  grid-row: 1/3;
+  margin-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.customer-stage-progress {
+  padding: 12px 8px;
+  margin-bottom: 14px;
+}
+.customer-stage-progress ol {
+  margin: 0;
+}
+.workspace-tabs {
+  margin-bottom: 18px;
+}
+.customer-record-layout,
+.customer-record-layout.panel-hidden {
+  display: block;
+}
+.customer-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.customer-overview-grid > .card {
+  margin: 0;
+}
+.customer-info-section > summary {
+  min-height: 68px;
+  padding: 14px 18px;
+}
+.customer-stage-panel {
+  position: fixed;
+  z-index: 110;
+  right: 0;
+  top: 0;
+  height: 100dvh;
+  box-sizing: border-box;
+  width: min(380px, 100%);
+  overflow-y: auto;
+  border-radius: 0;
+  padding: 24px;
+}
+.customer-serial-edit-list {
+  list-style: none;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.customer-serial-edit-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line-soft);
+  padding: 6px 0;
+}
+.customer-serial-edit-list span {
+  overflow-wrap: anywhere;
+}
+.record-more-actions {
+  position: relative;
+}
+.record-more-actions > button {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  white-space: nowrap;
+  background: var(--surface);
+  z-index: 20;
+}
+.decision-dialog {
+  position: fixed;
+  z-index: 160;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(460px, calc(100% - 32px));
+  box-sizing: border-box;
+  max-height: 85dvh;
+  overflow: auto;
+}
+.decision-dialog h2 {
+  font-size: 21px;
+}
+.decision-dialog p {
+  line-height: 1.6;
+}
+.project-management {
+  padding: 22px 28px;
+  min-width: 0;
+  overflow: hidden;
+}
+.kanban-stage-jumps {
+  display: flex;
+  gap: 8px;
+  overflow: auto;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+.kanban-stage-jumps .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.project-kanban {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  align-items: flex-start;
+  max-width: 100%;
+  padding-bottom: 20px;
+  min-height: 60vh;
+  scroll-snap-type: x proximity;
+}
+.kanban-column {
+  flex: 0 0 285px;
+  min-width: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 12px;
+  scroll-snap-align: start;
+}
+.kanban-column > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 4px 2px 14px;
+}
+.kanban-column h2 {
+  font-size: 14px;
+  margin: 0;
+}
+.kanban-column > header > span {
+  font-size: 12px;
+  font-weight: 650;
+}
+.kanban-customer {
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: none;
+  border-radius: 9px;
+}
+.kanban-customer > a {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text);
+  text-decoration: none;
+}
+.kanban-customer p {
+  line-height: 1.5;
+  margin: 10px 0;
+}
+.kanban-customer small {
+  display: block;
+  font-size: 11px;
+}
+.kanban-customer .btn {
+  margin-top: 12px;
+  width: 100%;
+  white-space: normal;
+}
+.kanban-customer[draggable="true"] {
+  cursor: grab;
+}
+.trash-customer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+@media (max-width: 900px) {
+  .customer-overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .customer-workspace .workspace-heading {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .customer-workspace .workspace-actions {
+    grid-column: 1/-1;
+    grid-row: 3;
+    justify-content: flex-start;
+  }
+  .workspace-status {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .customer-summary {
+    flex-wrap: wrap;
+  }
+  .customer-open {
+    margin-left: auto;
+  }
+}
+@media (max-width: 600px) {
+  .customer-directory,
+  .customer-workspace,
+  .project-management {
+    padding: 16px;
+  }
+  .customer-workspace .workspace-title h1 {
+    font-size: 21px;
+  }
+  .customer-stage-progress {
+    padding: 8px;
+  }
+  .customer-stage-progress li {
+    min-width: 88px;
+  }
+  .customer-serial-edit-list button,
+  .customer-overview-grid .input,
+  .customer-overview-grid .select {
+    font-size: 16px;
+  }
+  .kanban-column {
+    flex-basis: calc(100vw - 58px);
+  }
+  .kanban-customer .btn {
+    min-height: 48px;
+  }
+  .trash-customer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.customer-workspace .workspace-heading {
+  row-gap: 4px;
+}
+.back-customers {
+  margin-bottom: 12px;
+}
+.customer-stage-progress {
+  padding: 8px 6px;
+  margin-bottom: 10px;
+}
+.customer-stage-progress li {
+  gap: 5px;
+  font-size: 10px;
+  line-height: 1.25;
+}
+.customer-stage-progress .stage-progress-dot {
+  width: 23px;
+  height: 23px;
+  font-size: 10px;
+}
+.customer-stage-progress li::after {
+  top: 11px;
+}
+.workspace-tabs {
+  margin-bottom: 12px;
+}
+.workspace-tabs button {
+  padding: 10px 6px;
+}
+
+@media (max-width: 600px) {
+  .customer-workspace .workspace-actions { flex-wrap: wrap; }
+  .decision-dialog input, .decision-dialog textarea { font-size: 16px; }
+}

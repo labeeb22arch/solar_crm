@@ -47,6 +47,8 @@ export const PAGES = {
   loan_tracking: { label: 'Loan tracking', roles: OFFICE },
   today: { label: 'Today', roles: OFFICE },
   overview: { label: 'Overview', roles: ['Admin', 'Office Staff', 'Finance', 'CPO'] },
+  project_management: {label:'Project Management',roles:OFFICE},
+  trash: {label:'Trash',roles:OFFICE},
   projects: { label: 'Customers list', roles: OFFICE },
   record: { label: 'Customer record', roles: ALL },
   partner: { label: 'Partner home', roles: ['CPO', 'CP', 'Dealer'] },

@@ -1,3 +1,5 @@
+import ProjectManagement from './pages/ProjectManagement.jsx';
+import Trash from './pages/Trash.jsx';
 import Finance from './pages/Finance.jsx';
 import FinanceTabs from './components/FinanceTabs.jsx';
 import Operations from './pages/Operations.jsx';
@@ -64,6 +66,9 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="today" element={G('today', <Today />)} />
             <Route path="overview" element={G('overview', <Overview />)} />
+            <Route path="project-management" element={G('project_management', <ProjectManagement/>)} />
+            <Route path="trash" element={G('trash', <Trash/>)} />
+            <Route path="completed" element={G('warranty', <Warranty/>)} />
             <Route path="projects" element={G('projects', <Projects />)} />
             <Route path="p/:id" element={G('record', <Record />)} />
             <Route path="partner" element={G('partner', <PartnerHome />)} />

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5210",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 5210"
+    "preview": "vite preview --host 127.0.0.1 --port 5210",
+    "test": "node --test src/lib/*.test.mjs src/docs/proposal/calc.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
