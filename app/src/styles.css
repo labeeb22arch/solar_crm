@@ -1688,3 +1688,5 @@ a.kpi:hover .kpi-go { color: var(--tc-ink); transform: translate(2px, -2px); }
 .loan-name-check{margin-top:18px;}.loan-name-check h3{margin-bottom:14px;}.loan-name-check input[type=file]{width:100%;min-width:0;font-size:12px;}.loan-name-check pre{max-height:180px;overflow:auto;}
 @media(max-width:600px){.loan-name-check .input{font-size:16px;}.loan-name-check .btn{width:100%;min-height:48px;}}
 .warranty-history>[hidden]{display:none!important;}
+.name-check-layout{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:20px;align-items:start;}.name-check-customers{max-height:65vh;overflow-y:auto;margin-top:14px;}.name-check-customer{display:flex;flex-direction:column;gap:7px;width:100%;text-align:left;padding:14px 10px;background:transparent;border:0;border-bottom:1px solid var(--line-soft);color:var(--text);cursor:pointer;}.name-check-customer small{color:var(--text-2);}.name-check-customer.selected{background:var(--surface-2);border-radius:8px;}
+@media(max-width:760px){.name-check-layout{grid-template-columns:minmax(0,1fr);}.name-check-customers{max-height:230px;}.name-check-layout .input,.name-check-layout .select{font-size:16px;}}

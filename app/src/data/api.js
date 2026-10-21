@@ -1031,9 +1031,8 @@ export async function getStampQueue() { return getInbox(['agreement_sign', 'stam
 
 // ---------- name check ----------
 export async function listNameChecks() {
-  return delay(scoped().filter((p) => p.type === 'Residential' && p.tracks.grid.find((x) => x.key === 'discom_docs').status !== 'not_started' || !p.nameCheck.match)
-    .map((p) => ({ pid: p.id, crn: p.crn, name: p.name, discom: p.discom, bank: p.bank, consumerNo: p.consumerNo, ...p.nameCheck, score: similarity(p.nameCheck.discomName, p.nameCheck.bankName) }))
-    .sort((a, b) => Number(a.match || !!a.resolution) - Number(b.match || !!b.resolution) || a.score - b.score));
+ if(!can(session.role,'internal_money'))deny();
+ return delay(scoped().map(p=>({pid:p.id,crn:p.crn,name:p.name,discom:p.discom,bank:p.bank,consumerNo:p.consumerNo,...p.nameCheck})).sort((a,b)=>Number(!!a.verifiedAt)-Number(!!b.verifiedAt)||a.name.localeCompare(b.name)));
 }
 export function tokens(s) { return String(s).toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean); }
 export function tokenMatch(t, others) {

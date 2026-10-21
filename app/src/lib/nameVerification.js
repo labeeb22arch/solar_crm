@@ -1,16 +1,15 @@
-export function nameFromText(text) {
- const lines=String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
- for(let i=0;i<lines.length;i++) {
-  const match=lines[i].match(/^(?:consumer\s*name|customer\s*name|account\s*holder(?:\s*name)?|name\s*of\s*(?:the\s*)?(?:consumer|customer|account\s*holder)|name)\s*[:.\-]?\s*(.*)$/i);
-  if(match){const value=(match[1]||lines[i+1]||'').trim();if(value.length>2&&!/\d/.test(value))return value.slice(0,180);}
- }
- return '';
+export function namesMatch(a,b) {
+ const normal=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[\s.,]+/g,' ').trim();
+ return !!normal(a)&&normal(a)===normal(b);
 }
 export function cleanNameVerification(input) {
  const discomName=String(input.discomName||'').trim().slice(0,180),bankName=String(input.bankName||'').trim().slice(0,180);
  if(!discomName||!bankName)throw new Error('Enter both names as printed on the documents');
- if(!input.bankConfirmed)throw new Error('Confirm the bank account holder name');
- const normal=v=>v.normalize('NFKC').toLowerCase().replace(/[\s.,]+/g,' ').trim();
- const match=normal(discomName)===normal(bankName);
- return {discomName,bankName,match,bankConfirmed:true,resolution:match?null:input.samePerson?'Accepted as same person':null,billFile:String(input.billFile||'').slice(0,255),bankFile:String(input.bankFile||'').slice(0,255)};
+ if(!input.bankConfirmed)throw new Error('Confirm that you checked both names against the documents');
+ const exact=namesMatch(discomName,bankName);
+ const reviewStatus=input.reviewStatus||(exact||input.samePerson?'matches':'change_needed');
+ if(!['matches','change_needed'].includes(reviewStatus))throw new Error('Choose Matches or Change needed');
+ const links={};
+ for(const key of ['billUrl','bankUrl']){const value=String(input[key]||'').trim();if(value){try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error();}catch{throw new Error('Use a valid http or https document link');}}links[key]=value;}
+ return {discomName,bankName,...links,reviewStatus,match:reviewStatus==='matches'&&exact,bankConfirmed:true,resolution:reviewStatus==='matches'&&!exact?'Accepted as same person':null};
 }

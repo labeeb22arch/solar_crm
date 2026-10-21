@@ -23,7 +23,7 @@ export const MODULES = [
   { key: 'overview', section: 'main', tone: 'blue', page: 'overview', label: 'Overview', to: '/overview', icon: IconLayoutDashboard, chord: 'o', desc: 'Big picture: progress of all customers' },
   { key: 'projects', section: 'main', tone: 'violet', page: 'projects', label: 'Customers', to: '/projects', icon: IconUsers, chord: 'c', desc: 'Customer status and the next action', match: ['/p'] },
   // Quotation, Feasibility, Name check and DISCOM submission are documents: they open from Documents.
-  { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/name-check', '/grid', '/proposal'] },
+  { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/grid', '/proposal'] },
   { key: 'my_commission', section: 'main', tone: 'green', page: 'my_commission', label: 'My commission', to: '/my-commission', icon: IconCoin, chord: 'm', desc: 'Commission earned, pending and paid' },
   { key: 'tally', section: 'main', tone: 'sun', page: 'tally', label: 'Truck tally', to: '/supply/tally', icon: IconTruck, chord: 'y', desc: 'Load check before the truck leaves', only: ['Installation Team'] },
   // Operations: installation schedule and stock.
@@ -37,6 +37,7 @@ export const MODULES = [
   { key: 'payments_received', section: 'money', tone: 'green', page: 'finance', label: 'Payments received', to: '/finance/received', icon: IconReceipt },
   { key: 'payments_expected', section: 'money', tone: 'sun', page: 'finance', label: 'Expected payments', to: '/finance/expected', icon: IconCalendarEvent },
   { key: 'operations', section: 'ops', tone: 'blue', page: 'operations', label: 'Operations', to: '/operations', icon: IconPackages, desc: 'Equipment brands, models and registrations' },
+  { key: 'name_check', section: 'ops', tone: 'blue', page: 'name_check', label: 'Name check', to: '/name-check', icon: IconId, desc: 'Electricity bill and bank name verification' },
   { key: 'subsidy_tracking', section: 'money', tone: 'green', page: 'subsidy_tracking', label: 'Subsidy tracking', to: '/money/subsidy', icon: IconCoin, trackingKind: 'subsidy' },
   { key: 'loan_tracking', section: 'money', tone: 'blue', page: 'loan_tracking', label: 'Loan tracking', to: '/money/loans', icon: IconCurrencyRupee, trackingKind: 'loan' },
   // Money (vendor commission stays removed).
