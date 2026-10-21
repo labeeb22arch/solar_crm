@@ -17,6 +17,10 @@ Local URL: http://localhost:5210
 
 ## Build / deploy
 
+From the repository root, run `npm run deploy` to build the current app and push only its production assets to the `gh-pages` branch. This requires GitHub push access. Then enable Settings → Pages → Deploy from a branch → `gh-pages` → `/ (root)` using an account with Admin or Maintainer access.
+
+Use `npm run deploy -- --build-only` to validate the build without pushing.
+
 ```sh
 cd app
 npm ci

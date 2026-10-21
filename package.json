@@ -1,0 +1,12 @@
+{
+  "name": "sunpay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix app run dev",
+    "build": "npm --prefix app run build",
+    "preview": "npm --prefix app run preview",
+    "deploy": "node scripts/deploy.mjs"
+  }
+}
