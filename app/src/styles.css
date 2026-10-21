@@ -1656,3 +1656,7 @@ a.kpi:hover .kpi-go { color: var(--tc-ink); transform: translate(2px, -2px); }
 .payment-history-filters {display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:16px 20px;border-bottom:1px solid var(--line-soft);}
 .payment-history-filters>.input {flex:1 1 240px;}.payment-history-filters .fld {margin:0;}.payment-history-filters>.select{width:auto;}
 .customer-recent-payments>.input {margin-top:14px;}
+.document-card-actions {display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px;}
+.simple-document-task>.btn {margin-right:8px;margin-bottom:8px;}
+.signature-review .sg-photo {background:white;border:1px solid #e7e0d7;border-radius:12px;margin:20px 0;}
+.signature-review .sg-photo img {width:100%;max-height:220px;object-fit:contain;}

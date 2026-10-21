@@ -70,6 +70,7 @@ function Pad({ onChange }) {
  */
 function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signature', fineprint }) {
   const [tab, setTab] = useState('draw');
+  const [review,setReview]=useState(null);
   const [hasInk, setHasInk] = useState(false);
   const [padKey, setPadKey] = useState(0);
   const [photo, setPhoto] = useState(null); // { url } cleaned
@@ -93,12 +94,9 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
   };
   const submit = async () => {
     setErr('');
-    let png = null;
-    if (tab === 'draw') png = padWrap.current?.querySelector('canvas')?.toDataURL('image/png');
-    else png = photo?.url;
-    if (!png) return;
+    if (!review?.png) return;
     setBusy(true);
-    try { await onSubmit(png, tab === 'draw' ? 'drawn' : 'photo'); }
+    try { await onSubmit(review.png, review.method); }
     catch (x) {
       if (x.code === 'used' || x.code === 'expired' || x.code === 'unknown') onLinkError(x.code);
       else setErr(x.message);
@@ -106,6 +104,7 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
   };
   return (
     <>
+      <div hidden={!!review}>
       <div className="sg-tabs" role="tablist">
         <button role="tab" aria-selected={tab === 'draw'} className={tab === 'draw' ? 'on' : ''} onClick={() => { setTab('draw'); setErr(''); }}><IconPencil size={20} /> Sign on screen</button>
         <button role="tab" aria-selected={tab === 'photo'} className={tab === 'photo' ? 'on' : ''} onClick={() => { setTab('photo'); setErr(''); }}><IconCamera size={20} /> Upload a photo</button>
@@ -128,8 +127,9 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
           <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={pickPhoto} />
       </div>
       {err && <p className="sg-err">{err}</p>}
-      <button className="sg-btn primary" onClick={submit} disabled={busy || (tab === 'draw' ? !hasInk : !photo)}>{busy ? 'Sending…' : submitLabel}</button>
-      <p className="sg-small">{fineprint}</p>
+      <button className="sg-btn primary" onClick={()=>{setErr('');const png=tab==='draw'?padWrap.current?.querySelector('canvas')?.toDataURL('image/png'):photo?.url;if(png)setReview({png,method:tab==='draw'?'drawn':'photo'});}} disabled={busy || (tab === 'draw' ? !hasInk : !photo)}>Review signature</button>
+      </div>
+      {review&&<section className="signature-review" aria-label="Review signature"><h2>Check your signature</h2><p className="sg-help">Make sure it is clear and complete before sending.</p><div className="sg-photo"><img src={review.png} alt="Signature preview before sending"/></div>{err&&<p className="sg-err" role="alert">{err}</p>}<button className="sg-btn ghost" disabled={busy} onClick={()=>{setReview(null);setErr('');}}><IconPencil size={18}/>Edit signature</button><p className="sg-small">{fineprint}</p><button className="sg-btn primary" disabled={busy} onClick={submit}>{busy?'Sending…':submitLabel==='Submit signature'?'Send signature':submitLabel}</button></section>}
     </>
   );
 }
