@@ -308,5 +308,5 @@ export function LinkCRNs({ text }) {
 /** On a document page opened for one customer: back to that customer's Documents. */
 export function BackToDocs({ pid }) {
   if (!pid) return null;
-  return <Link className="btn sm" to={`/documents?p=${pid}`}><IconArrowLeft size={14} /> Documents</Link>;
+  return <Link className="btn sm" to={`/p/${pid}?tab=documents`}><IconArrowLeft size={14} /> Documents</Link>;
 }

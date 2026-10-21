@@ -4,7 +4,7 @@ import DocumentTask from '../components/DocumentTask.jsx';
 import DocumentQueues from '../components/DocumentQueues.jsx';
 import { documentRules, SCHEMES } from '../lib/documentRules.js';
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate,useNavigate, useSearchParams } from 'react-router-dom';
 import {
   IconFileInvoice, IconFileCertificate, IconSolarPanel2, IconFileText, IconId, IconReceipt, IconFolders, IconArrowRight, IconCircleCheck, IconAlertTriangle, IconClock, IconPencil, IconBrandGoogleDrive, IconUserSearch, IconFilePlus, IconFolderPlus, IconLock,
 } from '@tabler/icons-react';
@@ -106,7 +106,8 @@ export default function Documents({ customerId, embedded = false }) {
 
   const ready = docs.filter((d) => d.state === 'done').length;
 
-  if (!embedded && !pid) return <div className="page"><PageHead title="Document maker" sub="All client documents, organised by what needs doing next."/><DocumentQueues/></div>;
+  if (!embedded && pid) return <Navigate to={`/p/${pid}?tab=documents`} replace/>;
+  if (!embedded && !pid) return <div className="page"><PageHead title="Documents" sub="Track sent links and completed documents. Create documents from each customer’s Documents tab."/><DocumentQueues/></div>;
 
   return (
     <div className={embedded ? "embedded-documents" : "page"}>

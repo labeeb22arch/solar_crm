@@ -121,37 +121,8 @@ export function Installs() {
 
 /* ---------------- Grid ---------------- */
 export function DiscomDocs() {
-  const session = useSession();
-  const [params, setParams] = useSearchParams();
-  const open = params.get('a');
-  const [rows] = useData(() => api.listDiscomDocs(), [session.role, session.branch]);
-  const ui = useUi();
-  if (open) return <AgreementScreen pid={open} onBack={() => setParams({})} />;
-  return (
-    <div className="page">
-      <PageHead title="Electricity board (DISCOM)" sub="Documents for the DISCOM file, per customer. A file is ready to submit when every column is ticked. Open the agreement to print it or download the PDF, and send the customer a link to sign it on their phone." />
-      <div className="doc-preview" style={{ padding: '14px 18px', marginBottom: 14, boxShadow: 'none', border: '1px solid var(--line-soft)' }}><DocBrand sub="Applicant / installer for DISCOM rooftop solar submissions" /></div>
-      <SubNav parent="grid" />
-      <div className="card tbl-wrap">
-        <table className="tbl">
-          <thead><tr><th>Customer</th><th>DISCOM</th>{(rows?.[0]?.docs || []).map((d) => <th key={d.k} className="hide-sm" style={{ textAlign: 'center' }} title={d.k}>{d.k.split(' ')[0]}</th>)}<th className="r">Ready</th><th>Submission</th><th>Customer signature</th><th>Agreement</th></tr></thead>
-          <tbody>{(rows || []).map((r) => { const ok = r.docs.filter((d) => d.ok).length; return (
-            <tr key={r.pid} className="click" onClick={() => ui.openCustomer(r.pid)}>
-              <td><CustName id={r.pid} name={r.name} crn={r.crn} /></td><td>{r.discom}</td>
-              {r.docs.map((d) => <td key={d.k} className="hide-sm" style={{ textAlign: 'center' }}>{d.ok ? <IconCheck size={15} style={{ color: 'var(--accent-text)' }} /> : <span className="dot not_started" style={{ display: 'inline-block' }} />}</td>)}
-              <td className="r num">{ok}/{r.docs.length}</td><td><Pill status={r.submission} /></td>
-              <td><span className={'sign-state ' + r.sign.state}>{signLabel(r.sign)}</span></td>
-              <td onClick={(e) => e.stopPropagation()}>
-                <div className="row" style={{ gap: 6 }}>
-                  <button className="btn sm" onClick={() => setParams({ a: r.pid })}><IconFileText size={14} /> Open agreement</button>
-                  {r.sign.state !== 'signed' && <SignLinkButton pid={r.pid} small label="Send signing link" />}
-                </div>
-              </td>
-            </tr>); })}</tbody>
-        </table>
-      </div>
-    </div>
-  );
+ const [params]=useSearchParams();const nav=useNavigate();const pid=params.get('a');
+ return pid?<AgreementScreen pid={pid} onBack={()=>nav(`/p/${pid}?tab=documents`)}/>:<Navigate to="/documents" replace/>;
 }
 
 function AgreementScreen({ pid, onBack }) {
@@ -164,7 +135,7 @@ function AgreementScreen({ pid, onBack }) {
   const sign = p.signature?.png ? `Customer signed ${fdate(p.signature.at)}` : p.signRequest?.status === 'sent' ? (new Date(p.signRequest.expiresAt) < new Date() ? 'Signing link expired' : 'Signing link sent') : 'Not signed';
   return (
     <div className="page ag-screen">
-      <div className="slide-bar" style={{ paddingLeft: 0 }}><button className="btn sm ghost" onClick={onBack}><IconArrowLeft size={15} /> DISCOM documents</button></div>
+      <div className="slide-bar" style={{ paddingLeft: 0 }}><button className="btn sm ghost" onClick={onBack}><IconArrowLeft size={15} /> Customer documents</button></div>
       <PageHead title={`Agreement for ${p.name}`} sub="The PM Surya Ghar model agreement (4 pages) filled in for this customer. Yellow marks show the customer's details; they are left out of the PDF and the printout." />
       <div className="ag-fields card card-b">
         <label className="stack" style={{ gap: 4 }}><span className="faint small">Agreement date</span><input className="input" value={opts.executionDate} onChange={(e) => setOpts({ ...opts, executionDate: e.target.value })} placeholder="dd-mm-yyyy" /></label>

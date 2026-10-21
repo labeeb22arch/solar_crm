@@ -1,25 +1,16 @@
-import DocumentTask from './DocumentTask.jsx';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import {useEffect,useState} from 'react';
+import {Link,useSearchParams} from 'react-router-dom';
 import * as api from '../data/api.js';
-import { DOCUMENT_TASKS } from '../lib/documentTask.js';
-import { useData, useSession } from '../lib/hooks.jsx';
-import { CustName, Empty } from './ui.jsx';
-const group=state=>['prepare','share'].includes(state)?'prepare':state==='waiting'?'sent':'returned';
-const FLOWS=[['prepare','To send'],['sent','Sent'],['returned','Returned']];
+import {indiaDay} from '../lib/receipts.js';
+import {useData,useSession,fdateY} from '../lib/hooks.jsx';
+import {Empty} from './ui.jsx';
 export default function DocumentQueues() {
-  const session=useSession();const [params,setParams]=useSearchParams();
-  const flow=FLOWS.some(([key])=>key===params.get('flow'))?params.get('flow'):'prepare';
-  const type=DOCUMENT_TASKS.some(([key])=>key===params.get('queue'))?params.get('queue'):'quote';
-  const [rows]=useData(()=>api.documentQueueCustomers(),[session.role,session.branch]);
-  const [query,setQuery]=useState('');const [limit,setLimit]=useState(24);
-  useEffect(()=>setLimit(24),[flow,type,query]);
-  const patch=(key,value)=>{const next=new URLSearchParams(params);if(value)next.set(key,value);else next.delete(key);setParams(next);};
-  const documents=(rows||[]).flatMap((row)=>(row.documents||[]).map((doc)=>({...row,doc}))).filter((row)=>(!type||row.doc.key===type)&&`${row.name} ${row.crn} ${row.city}`.toLowerCase().includes(query.toLowerCase())).sort((a,b)=>(Date.parse(b.updatedAt)||0)-(Date.parse(a.updatedAt)||0));
-  const matches=documents.filter((row)=>group(row.doc.state)===flow);
-  return <section><div className="document-type-tabs">{DOCUMENT_TASKS.map(([key,title])=><button className={'btn '+(type===key?'primary':'')} aria-pressed={type===key} key={key} onClick={()=>patch('queue',key)}>{title}</button>)}</div><div className="row" style={{gap:8,flexWrap:'wrap',marginBottom:16}}>{FLOWS.map(([key,title])=><button className={'btn '+(flow===key?'primary':'')} aria-pressed={flow===key} key={key} onClick={()=>patch('flow',key)}>{title} · {documents.filter((r)=>group(r.doc.state)===key).length}</button>)}</div>
-    <div className="row" style={{gap:12,flexWrap:'wrap',marginBottom:18}}><input className="input" style={{maxWidth:400}} aria-label="Search document customers" placeholder="Search across client documents" value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
-    {rows===null?<p>Loading document customers…</p>:!matches.length?<Empty>No documents in this view.</Empty>:<div className="procurement-customers">{matches.slice(0,limit).map((r)=><article className="card card-b" key={r.id+r.doc.key}><span className="detail-label">{r.doc.title}</span><CustName id={r.id} name={r.name} crn={r.crn}/><p className="small faint">{r.city} · {r.kwp} kWp · {r.stageLabel}</p><DocumentTask customerId={r.id} docKey={r.doc.key}/></article>)}</div>}
-    {matches.length>limit&&<button className="btn" style={{marginTop:18}} onClick={()=>setLimit((n)=>n+24)}>Show more documents</button>}
-  </section>;
+ const session=useSession();const [params,setParams]=useSearchParams();
+ const view=params.get('view')==='received'||params.get('flow')==='returned'?'received':'waiting';
+ const [rows]=useData(()=>api.documentQueueCustomers(),[session.role,session.branch]);
+ const [query,setQuery]=useState(''),[type,setType]=useState(''),[stage,setStage]=useState(''),[from,setFrom]=useState(''),[to,setTo]=useState(''),[limit,setLimit]=useState(24);
+ useEffect(()=>setLimit(24),[view,query,type,stage,from,to]);
+ const documents=(rows||[]).flatMap(r=>(r.documents||[]).filter(d=>d.inbox).map(doc=>({...r,doc}))).filter(r=>(!type||r.doc.key===type)&&(!stage||r.stage===stage)&&`${r.name} ${r.crn} ${r.city}`.toLowerCase().includes(query.toLowerCase())&&(!from||indiaDay(r.doc.inbox.sentAt)>=from)&&(!to||!!r.doc.inbox.sentAt&&indiaDay(r.doc.inbox.sentAt)<=to));
+ const list=documents.filter(r=>r.doc.inbox.bucket===view).sort((a,b)=>Date.parse((view==='received'?b.doc.inbox.receivedAt:b.doc.inbox.sentAt)||0)-Date.parse((view==='received'?a.doc.inbox.receivedAt:a.doc.inbox.sentAt)||0));
+ return <section><div className="document-inbox-tabs">{[['waiting','Waiting for customer'],['received','Received']].map(([key,label])=><button className={'btn '+(view===key?'primary':'')} aria-pressed={view===key} key={key} onClick={()=>setParams(key==='received'?{view:key}:{})}>{label} · {documents.filter(r=>r.doc.inbox.bucket===key).length}</button>)}</div><div className="document-inbox-filters"><input className="input" aria-label="Search document customers" placeholder="Search customer, CRN or city" value={query} onChange={e=>setQuery(e.target.value)}/><select className="select" aria-label="Document type" value={type} onChange={e=>setType(e.target.value)}><option value="">All document types</option><option value="quote">Quotation</option><option value="agreement">DISCOM submission</option></select><select className="select" aria-label="Customer stage" value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{api.meta.STAGES.map(s=><option value={s.id} key={s.id}>{s.label}</option>)}</select><label className="fld"><span>Sent from</span><input className="input" type="date" value={from} onChange={e=>setFrom(e.target.value)}/></label><label className="fld"><span>Sent to</span><input className="input" type="date" min={from} value={to} onChange={e=>setTo(e.target.value)}/></label></div>{rows===null?<p>Loading documents…</p>:!list.length?<Empty hint="Create and share documents from the customer card’s Documents tab.">{view==='waiting'?'No sent links awaiting a customer.':'No completed documents in this view.'}</Empty>:<div className="document-inbox-list">{list.slice(0,limit).map(r=><article className="card card-b document-inbox-item" key={r.id+r.doc.key}><div><Link className="document-customer-name" to={`/p/${r.id}?tab=documents`}>{r.name}</Link><p className="small faint">{r.crn} · {r.stageLabel}</p><strong className="small">{r.doc.title}</strong><p className="small faint">{r.doc.inbox.sentAt?`Sent ${fdateY(r.doc.inbox.sentAt)}`:'Sent date not recorded'}{r.doc.inbox.receivedAt?` · Received ${fdateY(r.doc.inbox.receivedAt)}`:''}</p></div><div><span className={'document-inbox-status '+(view==='received'?'complete':'')}>{r.doc.inbox.expired?'Link expired · resend needed':view==='waiting'?'Awaiting customer':r.doc.inbox.saved?'Saved to customer':'Ready to download'}</span><Link className="btn" to={`/p/${r.id}?tab=documents`}>{view==='waiting'?'Open customer documents':'Download / save document'}</Link></div></article>)}</div>}{list.length>limit&&<button className="btn" onClick={()=>setLimit(n=>n+24)}>Show more</button>}</section>;
 }

@@ -1,3 +1,4 @@
+import {documentInboxEntry} from '../lib/documentInbox.js';
 import {cleanNameVerification} from '../lib/nameVerification.js';
 import { paymentMilestones, cleanPaymentPlan } from '../lib/customerMilestones.js';
 import { OPERATIONS_CATEGORIES, operationsOptions, changeOperationsOption } from '../lib/operationsLists.js';
@@ -1669,7 +1670,7 @@ export async function documentQueueCustomers() {
       if (request) return p.documentDelivery?.[request.token] ? 'Link sent · awaiting customer' : 'Link prepared · ready to send';
       return 'Document to prepare';
     };
-    return { ...summary(p), documents: DOCUMENT_TASKS.filter(([key]) => rules.classify(key).bucket === 'current' || preparedDocumentKeys(p).includes(key)).map(([key,title]) => ({key,title,state:documentTaskState(p,key),prepared:preparedDocumentKeys(p).includes(key)})), queues: ['quote','feas','agreement'].filter((key) => rules.classify(key).bucket === 'current'), states: { quote: state('proposal', p.proposalRequest, p.proposal?.accepted), agreement: state('agreement', p.signRequest, p.signature), feas: state('feas') } };
+    return { ...summary(p), documents: DOCUMENT_TASKS.filter(([key]) => rules.classify(key).bucket === 'current' || preparedDocumentKeys(p).includes(key)).map(([key,title]) => ({key,title,state:documentTaskState(p,key),prepared:preparedDocumentKeys(p).includes(key),inbox:documentInboxEntry(p,key)})), queues: ['quote','feas','agreement'].filter((key) => rules.classify(key).bucket === 'current'), states: { quote: state('proposal', p.proposalRequest, p.proposal?.accepted), agreement: state('agreement', p.signRequest, p.signature), feas: state('feas') } };
   }));
 }
 export async function recordDocumentSent(pid, kind, token) {

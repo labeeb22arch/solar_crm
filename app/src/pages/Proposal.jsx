@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { IconSend, IconRefresh, IconCircleCheck, IconClock } from '@tabler/icons-react';
 import * as api from '../data/api.js';
 import { useData, useToast, inr, fdate, fdateY } from '../lib/hooks.jsx';
-import { PageHead, Empty } from '../components/ui.jsx';
+import { PageHead, Empty,BackToDocs } from '../components/ui.jsx';
 import { CustomerPicker } from './Quotes.jsx';
 import { SignLinkDialog } from '../components/SignLink.jsx';
 import { ProposalViewer } from '../docs/proposal/ProposalViewer.jsx';
@@ -72,7 +72,7 @@ export default function Proposal() {
 
   return (
     <div className="page">
-      <PageHead title="Residential proposal" sub="On-grid rooftop solar proposal for a home. Check the inputs, look through the pages, then send it to the customer to accept on their phone." />
+      <PageHead title="Residential proposal" sub="On-grid rooftop solar proposal for a home. Check the inputs, look through the pages, then send it to the customer to accept on their phone."><BackToDocs pid={p.id}/></PageHead>
       <div className="pb-layout">
         <div className="card card-b pb-form">
           <CustomerPicker value={pid} onChange={(id) => setParams({ p: id })} />

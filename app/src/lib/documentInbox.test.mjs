@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {documentInboxEntry} from './documentInbox.js';
+const request={token:'t',expiresAt:'2030-01-01'};
+assert.equal(documentInboxEntry({},'quote'),null);
+assert.equal(documentInboxEntry({proposalRequest:request},'quote'),null,'Prepared links are not counted as sent');
+const p={proposalRequest:request,documentDelivery:{t:{at:'2026-10-21T12:00:00Z'}}};
+assert.equal(documentInboxEntry(p,'quote').bucket,'waiting');
+assert.equal(documentInboxEntry({...p,proposal:{accepted:{png:'signature',at:'2026-10-21T13:00:00Z'}}},'quote').bucket,'received');
+assert.equal(documentInboxEntry({...p,proposalRequest:{...request,expiresAt:'2020-01-01'}},'quote').expired,true,'Expired sent links remain visible for follow-up');
+assert.equal(documentInboxEntry({documentDownloads:{feas:{}}},'feas'),null,'An office PDF download is not a customer return');
+assert.equal(documentInboxEntry({...p,proposal:{accepted:{png:'s'}},docLinks:{proposal:{requestToken:'old'}}},'quote').saved,false);
+console.log('Document inbox sent/returned classification passed');
