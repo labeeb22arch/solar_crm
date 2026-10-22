@@ -5,7 +5,7 @@ const pad = (n) => String(n).padStart(2, '0');
 export const todayDdMmYyyy = (d = new Date()) => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
 export const DEFAULT_PAYMENT_TERMS = 'Mutually Agreed Terms of Payment …';
 
-/** Data for the 4 agreement pages from a Solar CRM customer, Sunpay's stamp/sign and the screen's own choices. */
+/** Data for the 4 agreement pages from a Solar CRM customer, Solar CRM's stamp/sign and the screen's own choices. */
 export function agreementData(p, assets = {}, extra = {}) {
   return {
     executionDate: extra.executionDate || todayDdMmYyyy(),

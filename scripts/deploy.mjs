@@ -25,7 +25,7 @@ try {
  const dist=join(root,'app/dist');
  writeFileSync(join(dist,'.nojekyll'),'');
  if(process.argv.includes('--build-only')) {console.log(`Build ready: ${dist}. Nothing pushed.`);process.exit(0);}
- temporary=mkdtempSync(join(tmpdir(),'sunpay-pages-'));
+ temporary=mkdtempSync(join(tmpdir(),'solar-crm-pages-'));
  run('git',['init','--initial-branch=gh-pages'],temporary);
  run('git',['remote','add','origin',remote],temporary);
  const existing=run('git',['ls-remote','--heads','origin','gh-pages'],temporary,true);
@@ -39,7 +39,7 @@ try {
  const changes=run('git',['status','--porcelain'],temporary,true);
  if(!changes) {console.log('The published build already matches this version.');}
  else {
-  run('git',['-c','user.name=Sunpay deploy','-c','user.email=deploy@sunpay.invalid','commit','-m','Publish Sunpay CRM build'],temporary);
+  run('git',['-c','user.name=Solar CRM deploy','-c','user.email=deploy@solar-crm.invalid','commit','-m','Publish Solar CRM build'],temporary);
   run('git',['push','origin','HEAD:gh-pages'],temporary);
  }
  console.log(`\nBuild pushed. In GitHub Settings → Pages choose Deploy from a branch → gh-pages → / (root).\nSite URL once Pages is enabled: https://${owner}.github.io/${repo}/`);

@@ -51,9 +51,9 @@ const FACTORIES = ['Banas Agro Processors Pvt Ltd', 'Deesa Potato Cold Chain', '
 const COMPANIES = ['Shreeji Textiles Pvt Ltd', 'Navkar Plastics', 'Om Sai Cold Storage', 'Kesar Dairy Co-op', 'Umiya Ceramics', 'Ambica Agro Foods', 'Riddhi Packaging LLP', 'Mahalaxmi Polymers', 'Sahjanand Engineering', 'Gokul Rice Mill', 'Jalaram Steel Works', 'Vrundavan School Trust'];
 
 // Company settings (single source for document headers and the sign-in footer). Confirmed public business details.
-export const COMPANY = { name: 'Sunpay Renewable Energy LLP', tagline: 'Solar EPC company · Residential, Commercial, Industrial', address: 'Deesa Bus Station, Jalaram Mandir, Gulbani Nagar, Deesa, Gujarat 385535', web: 'www.sunpays.in', phone: '+91 63559 59622', email: 'urvesh@sunpays.in', gstin: '24XXXXX0000X1ZX (demo)' };
+export const COMPANY = { name: 'Solar CRM', tagline: 'Solar project management', address: 'Gujarat, India', web: '', phone: '', email: '', gstin: '' };
 export const BRANCHES = ['Main Office', 'North Division', 'South Division'];
-// Sunpay is based in Deesa (Banaskantha). Main Office = Deesa; customers weighted towards North Gujarat.
+// Solar CRM is based in Deesa (Banaskantha). Main Office = Deesa; customers weighted towards North Gujarat.
 const CITY_BRANCH = {
   Deesa: 'Main Office', Palanpur: 'Main Office', Dhanera: 'Main Office', Tharad: 'Main Office', Bhabhar: 'Main Office', Kankrej: 'Main Office',
   Patan: 'North Division', Siddhpur: 'North Division', Mehsana: 'North Division', Unjha: 'North Division', Himmatnagar: 'North Division',

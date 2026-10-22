@@ -1,3 +1,4 @@
+import { demoBrandText } from '../../lib/demoBranding.js';
 // The A4 pages of the residential on-grid proposal. Rendered from one snapshot (inputs + number/date), so the
 // builder preview, the PDF and the customer's public page are always the same document.
 // Page order follows the Toolbox residential proposal: cover, overview, how it works, BOM & warranty,
@@ -56,8 +57,8 @@ export function bomRows(inp, m) {
     { item: 'Earthing Kit (Chemical/Rod)', qty: 3, unit: 'Set', make: 'Reputed make' },
     { item: 'MC4 Connectors', qty: 4, unit: 'Pairs', make: 'Reputed make' },
     { item: 'AC Cable (Service Wire)', qty: 20, unit: 'Mtrs', make: 'Reputed make' },
-    { item: 'Installation & Commissioning', qty: 1, unit: 'Job', make: 'Sunpay' },
-    { item: 'Transportation & Handling', qty: 1, unit: 'Trip', make: 'Sunpay' },
+    { item: 'Installation & Commissioning', qty: 1, unit: 'Job', make: 'Solar CRM' },
+    { item: 'Transportation & Handling', qty: 1, unit: 'Trip', make: 'Solar CRM' },
   ];
 }
 
@@ -103,8 +104,8 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
   const P = (props, children) => { no += 1; return <Page key={no} id={idPrefix + no} no={no} total={total} number={snap.number} {...props}>{children}</Page>; };
   const kw = `${num(m.kwp, m.kwp % 1 ? 1 : 0)} kWp`;
   const milestoneYears = [1, 5, 10, 15, 20, m.years].filter((y, i, a) => y <= m.years && a.indexOf(y) === i);
-  const terms = String(inp.terms || '').replace(/\{validity\}/g, String(inp.validityDays)).split('\n').map((t) => t.trim()).filter(Boolean);
-  const subsidyNote = 'The PM Surya Ghar subsidy is credited by the Government directly to your bank account — it is not a discount from Sunpay. It depends on DISCOM approval of the installation and on the name on the electricity bill matching the name on the bank account.';
+  const terms = demoBrandText(inp.terms).replace(/\{validity\}/g, String(inp.validityDays)).split('\n').map((t) => t.trim()).filter(Boolean);
+  const subsidyNote = 'The PM Surya Ghar subsidy is credited by the Government directly to your bank account — it is not a discount from Solar CRM. It depends on DISCOM approval of the installation and on the name on the electricity bill matching the name on the bank account.';
 
   const pages = [];
   // 1. Cover
@@ -134,7 +135,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
           <KV rows={[['Proposal no.', snap.number], ['System', `${kw} On-Grid`], ['Date', longDate(date)], ['Valid till', `${longDate(validTill)} (${inp.validityDays} days)`]]} />
         </div></div>
       </div>
-      <div className="pp-cover-foot"><p>{COMPANY.name}{showGstin ? ` | GSTIN: ${COMPANY.gstin}` : ''}</p><p>{COMPANY.address}</p><p>{COMPANY.phone} · {COMPANY.email} · {COMPANY.web}</p></div>
+      <div className="pp-cover-foot"><p>{COMPANY.name}{showGstin ? ` | GSTIN: ${COMPANY.gstin}` : ''}</p><p>{COMPANY.address}</p><p>{[COMPANY.phone,COMPANY.email,COMPANY.web].filter(Boolean).join(' · ')}</p></div>
     </>
   )));
 
@@ -169,7 +170,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
             <li>DISCOM net-metering application handled for you</li>
             <li>PM Surya Ghar subsidy application support</li>
             <li>Manufacturer warranties on modules and inverter</li>
-            <li>{num(w.workmanship)}-year workmanship warranty from Sunpay</li>
+            <li>{num(w.workmanship)}-year workmanship warranty from Solar CRM</li>
           </ul>
         </div>
       </div>
@@ -216,7 +217,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
         ['Solar PV modules', `${num(w.modulePerf)} years performance warranty, ${num(w.moduleProduct)} years product warranty (manufacturer)`],
         ['Inverter', `${num(w.inverter)} years standard warranty (manufacturer)`],
         ['Mounting structure', `${num(w.structure)} years against structural defects`],
-        ['Workmanship', `${num(w.workmanship)} years installation warranty (Sunpay)`],
+        ['Workmanship', `${num(w.workmanship)} years installation warranty (Solar CRM)`],
       ]} />
       <p className="pp-small">All warranties are subject to proper use and maintenance as per manufacturer guidelines. Warranty certificates are handed over at commissioning.</p>
     </>
@@ -248,7 +249,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
       <div className="pp-compare">
         <div className="pp-cmp before"><div className="pp-cmp-h">Without solar</div><b>{inr(m.monthly1.billBefore)}</b><span>per month · {num(m.consumptionMonthly)} units at ₹{num(m.tariff, 2)}</span></div>
         <div className="pp-arrow">→</div>
-        <div className="pp-cmp after"><div className="pp-cmp-h">With Sunpay solar</div><b>{m.monthly1.billAfter < 0 ? `${inr(-m.monthly1.billAfter)} credit` : inr(m.monthly1.billAfter)}</b><span>per month, after net-metering</span><div className="pp-save">Save {inr(m.monthly1.savings)} / month</div></div>
+        <div className="pp-cmp after"><div className="pp-cmp-h">With Solar CRM solar</div><b>{m.monthly1.billAfter < 0 ? `${inr(-m.monthly1.billAfter)} credit` : inr(m.monthly1.billAfter)}</b><span>per month, after net-metering</span><div className="pp-save">Save {inr(m.monthly1.savings)} / month</div></div>
       </div>
       <h3>Net-Metering (year 1)</h3>
       <KV rows={[
@@ -317,7 +318,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
   pages.push(P({ title: 'Commercial Offer', sub: 'Pricing and payment terms' }, (
     <>
       <div className="pp-two">
-        <div className="pp-card"><div className="pp-card-h">From</div><div className="pp-card-b"><b>{COMPANY.name}</b><p>{COMPANY.address}</p><p>{COMPANY.phone} · {COMPANY.email}</p>{showGstin && <p>GSTIN: {COMPANY.gstin}</p>}</div></div>
+        <div className="pp-card"><div className="pp-card-h">From</div><div className="pp-card-b"><b>{COMPANY.name}</b><p>{COMPANY.address}</p><p>{[COMPANY.phone,COMPANY.email].filter(Boolean).join(' · ')}</p>{showGstin && <p>GSTIN: {COMPANY.gstin}</p>}</div></div>
         <div className="pp-card"><div className="pp-card-h">Proposal for</div><div className="pp-card-b"><b>{c.name}</b><p>{c.address || c.city}</p><p>Proposal no. <b>{snap.number}</b> · {longDate(date)}</p></div></div>
       </div>
       <h3>System Pricing</h3>
@@ -332,7 +333,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
       </table>
       <p className="pp-small"><b>Amount in words:</b> {m.words}. {inp.gstNote}</p>
       <div className="pp-strip">
-        <div><span>Total price</span><b>{inr(m.price)}</b><em>incl. GST, paid to Sunpay</em></div>
+        <div><span>Total price</span><b>{inr(m.price)}</b><em>incl. GST, paid to Solar CRM</em></div>
         <div><span>PM Surya Ghar subsidy</span><b>− {inr(m.subsidy)}</b><em>credited to your bank account by the Government</em></div>
         <div className="net"><span>Effective cost to you</span><b>{inr(m.effectiveCost)}</b><em>after the subsidy is received</em></div>
       </div>
@@ -341,7 +342,7 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
       <div className="pp-pay">{ms.map((x, i) => (
         <div key={i} className="pp-pay-step"><span>{i + 1}</span><div><b>{x.label} ({num(x.pct)}%)</b><em>{inr((m.price * x.pct) / 100)}</em><p>{x.note}</p></div></div>
       ))}</div>
-      {isLoanMethod(inp.paymentMethod) && <p className="pp-small">Payment method: {inp.paymentMethod}{inp.bank ? ` (${inp.bank})` : ''}. The loan amount is paid by the lender against these milestones; your down payment of {inr(m.loan.down)} is paid to Sunpay.</p>}
+      {isLoanMethod(inp.paymentMethod) && <p className="pp-small">Payment method: {inp.paymentMethod}{inp.bank ? ` (${inp.bank})` : ''}. The loan amount is paid by the lender against these milestones; your down payment of {inr(m.loan.down)} is paid to Solar CRM.</p>}
       {(assets?.account || assets?.ifsc) && (
         <div className="pp-bank"><b>Bank transfer details</b><span>Beneficiary: {COMPANY.name}</span>{assets.account && <span>A/c no.: {assets.account}</span>}{assets.ifsc && <span>IFSC: {assets.ifsc}</span>}</div>
       )}
@@ -380,14 +381,14 @@ export function ProposalPages({ snap, accepted = null, assets = null, idPrefix =
         <div className="pp-signbox">
           <div className="pp-sign-h">For {COMPANY.name}</div>
           <div className="pp-sign-area stamp">
-            {assets?.stamp && <img src={assets.stamp} alt="Sunpay stamp" className="st" />}
+            {assets?.stamp && <img src={assets.stamp} alt="Solar CRM stamp" className="st" />}
             {assets?.sign && <img src={assets.sign} alt="Authorised signature" className="sg" />}
             {!assets?.stamp && !assets?.sign && <span className="pp-sign-empty">Stamp &amp; sign</span>}
           </div>
           <div className="pp-sign-line"><b>Authorised signatory</b><span>Date: {longDate(date)}</span></div>
         </div>
       </div>
-      <div className="pp-thanks"><h2>Thank you for choosing {COMPANY.name}</h2><p>Questions about this proposal? Call {COMPANY.phone} or write to {COMPANY.email}.</p></div>
+      <div className="pp-thanks"><h2>Thank you for choosing {COMPANY.name}</h2><p>Contact your project team for questions about this proposal.</p></div>
     </>
   )));
   return <>{pages}</>;

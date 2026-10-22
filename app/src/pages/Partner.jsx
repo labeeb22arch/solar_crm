@@ -32,7 +32,7 @@ export function PartnerHome() {
 
       <div className="comm-strip">
         <Link to="/my-commission" className="cs t-orange"><IconChip icon={IconCoin} tone="orange" /><span>Commission earned</span><b className="num">{inr(h.commission.earned)}</b><small>on customers already connected</small></Link>
-        <Link to="/my-commission" className="cs t-violet"><IconChip icon={IconHourglass} tone="violet" /><span>Waiting to be paid</span><b className="num">{inr(h.commission.pending)}</b><small>Sunpay will pay this</small></Link>
+        <Link to="/my-commission" className="cs t-violet"><IconChip icon={IconHourglass} tone="violet" /><span>Waiting to be paid</span><b className="num">{inr(h.commission.pending)}</b><small>Solar CRM will pay this</small></Link>
         <Link to="/my-commission" className="cs t-green"><IconChip icon={IconCash} tone="green" /><span>Paid to you</span><b className="num ok">{inr(h.commission.paid)}</b><small>already received</small></Link>
         <Link to="/my-commission" className="cs t-blue"><IconChip icon={IconCalendarDue} tone="blue" /><span>Coming later</span><b className="num">{inr(h.commission.upcoming)}</b><small>after grid connection</small></Link>
       </div>

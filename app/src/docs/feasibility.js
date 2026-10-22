@@ -1,14 +1,14 @@
 // Residential rooftop solar vendor feasibility report (3 pages, A4), made with pdf-lib.
 // Copied from SolarFlow's feasibilityReport.js: every coordinate, size, label and the page structure are the same.
-// Differences: the vendor is Sunpay (EPC code and bank details come from Admin → Company sign & stamp and stay blank
-// until filled in), the data comes from a Solar CRM customer, and the stamp slot carries Sunpay's stamp plus signature.
+// Differences: the vendor is Solar CRM (EPC code and bank details come from Admin → Company sign & stamp and stay blank
+// until filled in), the data comes from a Solar CRM customer, and the stamp slot carries Solar CRM's stamp plus signature.
 import { COMPANY } from '../data/seed.js';
 import { projectDistrict, pincodeFrom } from './district.js';
 
 const A4 = [595.28, 841.89];
-/** Sunpay as the vendor. EPC code, account and IFSC are never invented: they come from company settings. */
+/** Solar CRM as the vendor. EPC code, account and IFSC are never invented: they come from company settings. */
 export const vendorFrom = (assets = {}) => ({
-  name: 'SUNPAY RENEWABLE ENERGY LLP',
+  name: 'Solar CRM',
   address: COMPANY.address,
   epc: clean(assets.epc),
   account: clean(assets.account),
@@ -113,7 +113,7 @@ export async function createFeasibilityPdf(data, { stampUrl = null, signUrl = nu
     const black = rgb(0.08, 0.08, 0.08);
     const stamp = await embedImage(pdf, stampUrl).catch(() => null);
     const sign = await embedImage(pdf, signUrl).catch(() => null);
-    // SolarFlow's stamp box: x 350, y 103, 184 pt wide. Sunpay's stamp fills it; the authorised signature overlaps its
+    // SolarFlow's stamp box: x 350, y 103, 184 pt wide. Solar CRM's stamp fills it; the authorised signature overlaps its
     // right half and stays inside the same box.
     const BOX = { x: 350, y: 103, w: 184 };
     const addStamp = page => {

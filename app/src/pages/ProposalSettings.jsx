@@ -78,7 +78,7 @@ export default function ProposalSettings() {
               <Num label="Module product" value={f.warrantyModuleProduct} onChange={(v) => set('warrantyModuleProduct', v)} step="1" />
               <Num label="Inverter" value={f.warrantyInverter} onChange={(v) => set('warrantyInverter', v)} step="1" />
               <Num label="Structure" value={f.warrantyStructure} onChange={(v) => set('warrantyStructure', v)} step="1" />
-              <Num label="Workmanship (Sunpay)" value={f.warrantyWorkmanship} onChange={(v) => set('warrantyWorkmanship', v)} step="1" />
+              <Num label="Workmanship (Solar CRM)" value={f.warrantyWorkmanship} onChange={(v) => set('warrantyWorkmanship', v)} step="1" />
             </div>
           </div>
         </div>

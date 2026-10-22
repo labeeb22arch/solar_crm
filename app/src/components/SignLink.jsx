@@ -29,8 +29,8 @@ export function SignLinkDialog({ link, onClose }) {
   const phone = String(link.phone || '').replace(/\D/g, '').slice(-10);
   const proposal = link.kind === 'proposal';
   const msg = proposal
-    ? `Namaste ${first}, here is your Sunpay solar proposal for ${link.kwp} kW. Please review and accept here: ${link.url}`
-    : `Namaste ${first}, please sign your Sunpay solar agreement here: ${link.url} — Sunpay Renewable Energy`;
+    ? `Namaste ${first}, here is your Solar CRM solar proposal for ${link.kwp} kW. Please review and accept here: ${link.url}`
+    : `Namaste ${first}, please sign your Solar CRM solar agreement here: ${link.url} — Solar CRM`;
   const wa = `https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`;
   const copy = async () => {
     try { await navigator.clipboard.writeText(link.url); setCopied(true); toast('Link copied'); } catch { toast('Could not copy — select the link and copy it'); }

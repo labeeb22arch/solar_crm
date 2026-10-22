@@ -1,4 +1,4 @@
-# Sunpay working instructions
+# Solar CRM working instructions
 
 - The active CRM is in `app/`. The root npm scripts delegate to it. Do not work on the older root prototype or external Solarflow/Watersun references unless explicitly requested.
 - Before structural UI, workflow or data changes, read `docs/adr/README.md` and relevant accepted ADRs. Read `docs/design/DESIGN-SYSTEM.md` before changing shared UI.

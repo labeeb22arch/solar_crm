@@ -55,3 +55,8 @@ Validation: all 18 test files pass; production build passes. Browser checked doc
 Renamed the product brand, navigation subtitle, login header, browser title and package labels to Solar CRM. Preserved storage/session keys and company legal details. Added an Admin-only, idempotent 44-customer synthetic pack with four records per stage; supplied varied receipts, finance tracking, technical specifications, installation schedules, serials and warranty data. No invented file URLs or signatures. Cloud inserts ignore ID conflicts and verify saved records before reporting success. Existing customer records are retained.
 
 Verified the cloud insert readback for the 44-record pack and reloaded the app: Material Procurement now contains its four synthetic records, the main menu counts include the new customers, and the saved brand reads Solar CRM. All 19 test files pass and the production build passes. Existing customers were not reset or overwritten.
+
+## Remove company branding throughout the demo — ADR 0008
+Updated signing pages, WhatsApp share text, proposal pages and terms, feasibility/agreement vendor names, procurement PDF heading, company defaults and deployment author labels to Solar CRM. Removed the unused former logo. Legacy proposal terms normalize for display without changing stored customer/signature records. Existing storage keys and authentication identities remain compatible.
+
+Validation: all 20 test files pass and production build passes. Source scan found no old visible brand copy; remaining old strings are compatibility keys and normalization fixtures. Browser verified the Solar CRM login. No customer financial or signed records changed.

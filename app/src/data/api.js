@@ -437,7 +437,7 @@ export function openItems(p, hidden = []) {
   return out.sort((a, b) => URGENCY[b.status] - URGENCY[a.status] || b.age - a.age);
 }
 /** Items a role must not see (internal cost / other parties' commission). */
-// Sunpay uses customer signatures; legacy stamp-paper tasks stay stored but are not part of its workflow.
+// Solar CRM uses customer signatures; legacy stamp-paper tasks stay stored but are not part of its workflow.
 function hiddenFor(role = session.role) {
   return ['stamp', ...roleHiddenFor(role)];
 }
@@ -743,7 +743,7 @@ export async function listRecent() {
   return delay(ids.map((id) => find(id)).filter((p) => inScope(p)).map((p) => summary(p)));
 }
 
-// ---------- board ("Today at Sunpay") ----------
+// ---------- board ("Today at Solar CRM") ----------
 const st = (p, t, k) => item(p, t, k)?.status;
 const upd = (p, t, k) => item(p, t, k)?.updatedAt;
 const lastSub = (p) => p.subsidy[p.subsidy.length - 1];
@@ -1297,7 +1297,7 @@ export async function updateProjectFields(pid, patch) {
   persist(); return delay(summary(p));
 }
 
-// ---------- Sunpay's own stamp, signature and bank details (app_state 'company_assets') ----------
+// ---------- Solar CRM's own stamp, signature and bank details (app_state 'company_assets') ----------
 const ASSET_KEYS = ['stamp', 'sign', 'epc', 'account', 'ifsc'];
 export async function getCompanyAssets() {
   if (!auth) deny('Please sign in');

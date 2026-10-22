@@ -273,7 +273,7 @@ export function DocBrand({ sub }) {
       <div style={{ fontSize: 11.5, color: '#6b7280', lineHeight: 1.45 }}>
         <div style={{ fontWeight: 700, color: '#1f3fb4', fontSize: 13 }}>{c.name}</div>
         <div>{c.address}</div>
-        <div>{c.web} · {c.phone} · {c.email}</div>
+        <div>{[c.web,c.phone,c.email].filter(Boolean).join(' · ')}</div>
         {sub && <div>{sub}</div>}
       </div>
     </div>

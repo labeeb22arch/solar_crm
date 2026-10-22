@@ -133,7 +133,7 @@ function SignatureCapture({ onSubmit, onLinkError, submitLabel = 'Submit signatu
       {err && <p className="sg-err">{err}</p>}
       <button className="sg-btn primary" onClick={()=>{setErr('');const png=tab==='draw'?padWrap.current?.querySelector('canvas')?.toDataURL('image/png'):photo?.url;if(png)setReview({png,method:tab==='draw'?'drawn':'photo'});}} disabled={busy || (tab === 'draw' ? !hasInk : !photo)}>Review signature</button>
       </div>
-      {review&&<section className="signature-review" aria-label={confirming?'Submit signature':'Preview signature'}><h2 ref={reviewHeading} tabIndex={-1}>{confirming?'Ready to submit?':'Preview your signature'}</h2><p className="sg-help">{confirming?'Your signature will be sent to Sunpay with this document.':'Check that your signature is clear and complete.'}</p><div className="sg-photo"><img src={review.png} alt="Your signature preview"/></div>{err&&<p className="sg-err" role="alert">{err}</p>}
+      {review&&<section className="signature-review" aria-label={confirming?'Submit signature':'Preview signature'}><h2 ref={reviewHeading} tabIndex={-1}>{confirming?'Ready to submit?':'Preview your signature'}</h2><p className="sg-help">{confirming?'Your signature will be sent to Solar CRM with this document.':'Check that your signature is clear and complete.'}</p><div className="sg-photo"><img src={review.png} alt="Your signature preview"/></div>{err&&<p className="sg-err" role="alert">{err}</p>}
       {confirming?<><p className="sg-small">{fineprint}</p><button className="sg-btn primary" disabled={busy} onClick={submit}>{busy?'Submitting…':submitLabel==='Submit signature'?'Submit signature':submitLabel}</button><button className="sg-btn ghost" disabled={busy} onClick={()=>setConfirming(false)}>Back to preview</button></>:<><div className="signature-edit-actions"><button className="sg-btn ghost" disabled={busy} onClick={()=>{setReview(null);setConfirming(false);setErr('');}}>Change signature</button><button className="sg-btn ghost" disabled={busy} onClick={()=>{clear();setPhoto(null);setReview(null);setConfirming(false);setErr('');}}>Try again</button></div><button className="sg-btn primary" disabled={busy} onClick={()=>setConfirming(true)}>Continue to submit</button><p className="sg-small">Nothing is sent until you submit on the next step.</p></>}
       </section>}
     </>
@@ -148,16 +148,16 @@ export default function SignPage({ token }) {
 
   useEffect(() => { api.getSignRequest(token).then(setReq); }, [token]);
   const isProposal = req?.kind === 'proposal';
-  useEffect(() => { document.title = isProposal ? 'Your solar proposal · Sunpay' : 'Sign your agreement · Sunpay'; }, [isProposal]);
+  useEffect(() => { document.title = isProposal ? 'Your solar proposal · Solar CRM' : 'Sign your agreement · Solar CRM'; }, [isProposal]);
 
   const phone = api.meta.COMPANY.phone;
   const head = (
     <header className="sg-head">
       <SunMark size={34} />
-      <div><div className="sg-co">Sunpay Renewable Energy LLP</div><div className="sg-co-sub">{isProposal ? 'Solar proposal · secure link' : 'Solar CRM · secure signing'}</div></div>
+      <div><div className="sg-co">Solar CRM</div><div className="sg-co-sub">{isProposal ? 'Solar proposal · secure link' : 'Solar CRM · secure signing'}</div></div>
     </header>
   );
-  const contact = <a className="sg-call" href={'tel:' + phone.replace(/\s/g, '')}><IconPhone size={18} /> Call Sunpay: {phone}</a>;
+  const contact = phone ? <a className="sg-call" href={'tel:' + phone.replace(/\s/g, '')}><IconPhone size={18} /> Call Solar CRM: {phone}</a> : null;
   const linkError = (code) => setReq((r) => ({ ...(r || {}), status: code === 'used' ? 'signed' : code, expired: code === 'expired' }));
 
   let body;
@@ -168,13 +168,13 @@ export default function SignPage({ token }) {
       <div className="sg-msg ok">
         <IconCircleCheck size={48} />
         <h1>Thank you, {req.firstName}!</h1>
-        <p>Your signature has been received. Sunpay will add it to your agreement and DISCOM documents. You can close this page now.</p>
+        <p>Your signature has been received. Solar CRM will add it to your agreement and DISCOM documents. You can close this page now.</p>
       </div>
     );
   } else if (req.status === 'unknown' || req.status === 'signed' || req.expired) {
-    const t = req.status === 'signed' ? ['This agreement is already signed', 'This link has already been used, so nothing more is needed from you. If you think something is wrong, please contact Sunpay.']
-      : req.status === 'unknown' ? ['This link does not work', 'The link may be incomplete, or a newer link has been sent to you. Please contact Sunpay for a new link.']
-        : ['This link has expired', 'Signing links work for 7 days. Please contact Sunpay and we will send you a new one.'];
+    const t = req.status === 'signed' ? ['This agreement is already signed', 'This link has already been used, so nothing more is needed from you. If you think something is wrong, please contact Solar CRM.']
+      : req.status === 'unknown' ? ['This link does not work', 'The link may be incomplete, or a newer link has been sent to you. Please contact Solar CRM for a new link.']
+        : ['This link has expired', 'Signing links work for 7 days. Please contact Solar CRM and we will send you a new one.'];
     body = (
       <div className={'sg-msg' + (req.status === 'signed' ? ' ok' : '')}>
         {req.status === 'signed' ? <IconCircleCheck size={44} /> : <IconAlertCircle size={44} />}
@@ -187,11 +187,11 @@ export default function SignPage({ token }) {
     body = (
       <>
         <h1 className="sg-title">Namaste {req.firstName},</h1>
-        <p className="sg-lead">Please sign the <b>PM Surya Ghar agreement and DISCOM documents for your {req.kwp} kW solar system</b>. Your signature will be placed on the agreement with Sunpay.</p>
+        <p className="sg-lead">Please sign the <b>PM Surya Ghar agreement and DISCOM documents for your {req.kwp} kW solar system</b>. Your signature will be placed on the agreement with Solar CRM.</p>
         <SignatureCapture
           onSubmit={async (png, how) => { await api.submitSignature(token, png, how); setDone(true); }}
           onLinkError={linkError}
-          fineprint="By submitting, you agree that this signature is yours and may be printed on your solar agreement with Sunpay Renewable Energy LLP."
+          fineprint="By submitting, you agree that this signature is yours and may be printed on your solar agreement with Solar CRM."
         />
       </>
     );
@@ -208,7 +208,7 @@ function ProposalBody({ req, token, done, setDone, setReq, linkError, contact })
   const pr = req.proposal;
   if (req.status === 'unknown' || !pr) {
     return (
-      <div className="sg-msg"><IconAlertCircle size={44} /><h1>This link does not work</h1><p>The link may be incomplete, or a newer version of your proposal has been sent to you. Please contact Sunpay for the latest link.</p>{contact}</div>
+      <div className="sg-msg"><IconAlertCircle size={44} /><h1>This link does not work</h1><p>The link may be incomplete, or a newer version of your proposal has been sent to you. Please contact Solar CRM for the latest link.</p>{contact}</div>
     );
   }
   const t = pr.totals || {};
@@ -229,15 +229,15 @@ function ProposalBody({ req, token, done, setDone, setReq, linkError, contact })
   return (
     <>
       {done ? (
-        <div className="sg-msg ok"><IconCircleCheck size={48} /><h1>Thank you, {req.firstName}!</h1><p>You have accepted proposal {pr.number}. Your signature is now on the acceptance page below. Sunpay will call you about the next steps.</p></div>
+        <div className="sg-msg ok"><IconCircleCheck size={48} /><h1>Thank you, {req.firstName}!</h1><p>You have accepted proposal {pr.number}. Your signature is now on the acceptance page below. Solar CRM will call you about the next steps.</p></div>
       ) : (
         <>
           <h1 className="sg-title">Namaste {req.firstName},</h1>
-          <p className="sg-lead">Here is your <b>{req.kwp} kW rooftop solar proposal</b> from Sunpay ({pr.number}).{open ? ' Please read it, then accept it at the bottom of this page.' : ''}</p>
+          <p className="sg-lead">Here is your <b>{req.kwp} kW rooftop solar proposal</b> from Solar CRM ({pr.number}).{open ? ' Please read it, then accept it at the bottom of this page.' : ''}</p>
         </>
       )}
       {signed && !done && <div className="sg-msg ok" style={{ padding: '4px 0' }}><IconCircleCheck size={36} /><p><b>You accepted this proposal{accepted?.at ? ` on ${new Date(accepted.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}` : ''}.</b> Nothing more is needed from you.</p></div>}
-      {!signed && req.expired && <div className="sg-msg"><IconAlertCircle size={40} /><h1>This proposal has expired</h1><p>Prices are valid for a limited time. Please contact Sunpay and we will send you an updated proposal.</p>{contact}</div>}
+      {!signed && req.expired && <div className="sg-msg"><IconAlertCircle size={40} /><h1>This proposal has expired</h1><p>Prices are valid for a limited time. Please contact Solar CRM and we will send you an updated proposal.</p>{contact}</div>}
       <div className="sg-sum">
         <div><span>System</span><b>{t.kwp ?? req.kwp} kW</b></div>
         <div><span>Price incl. GST</span><b>{inr(t.price)}</b></div>
@@ -253,7 +253,7 @@ function ProposalBody({ req, token, done, setDone, setReq, linkError, contact })
             onSubmit={submit}
             onLinkError={linkError}
             submitLabel="Accept this proposal"
-            fineprint="By accepting, you agree to this proposal and its terms, and that this signature is yours and may be printed on the proposal from Sunpay Renewable Energy LLP."
+            fineprint="By accepting, you agree to this proposal and its terms, and that this signature is yours and may be printed on the proposal from Solar CRM."
           />
         </section>
       )}

@@ -1,4 +1,4 @@
-// Project stages — the ONE place they are defined. To use Sunpay's own stages later, edit this list
+// Project stages — the ONE place they are defined. To use Solar CRM's own stages later, edit this list
 // (ids are stored on each customer, so keep an id when only renaming a stage).
 import {
   IconUsers, IconClock, IconPackage, IconTool, IconFileText, IconSend, IconGauge, IconBolt, IconMapPin, IconClipboardCheck, IconCircleCheck,

@@ -1,6 +1,6 @@
 // Name declaration for the DISCOM / subsidy file: the customer confirms that the name on the electricity bill and
 // the name on the bank account belong to the same person. Plain one-page A4 PDF.
-// DRAFT WORDING — Sunpay should confirm it matches what their DISCOM accepts.
+// DRAFT WORDING — Solar CRM should confirm it matches what their DISCOM accepts.
 import { docFileName } from '../lib/docName.js';
 
 export async function downloadNameDeclaration(row, company) {

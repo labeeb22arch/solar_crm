@@ -7,7 +7,7 @@ export async function makeBOMPdf(project, version) {
     const rows = pdf.splitTextToSize(String(value || ''), 180);
     for (const row of rows) { if (y > 278) { pdf.addPage(); y = 20; } pdf.text(row, 15, y); y += size > 12 ? 9 : 6; }
   };
-  line('SUNPAY', true, 16); line('MATERIAL PROCUREMENT - BILL OF MATERIALS', true, 13);
+  line('SOLAR CRM', true, 16); line('MATERIAL PROCUREMENT - BILL OF MATERIALS', true, 13);
   line(`${project.name} | ${project.crn}`); line(`${project.city} | ${project.kwp} kWp`);
   line(`Version ${version.version} | Prepared by ${version.createdBy} | ${new Date(version.createdAt).toLocaleDateString('en-IN')}`);
   y += 6;

@@ -16,4 +16,6 @@ Use this log when a change affects navigation, customer data, stage progression,
 
 | [0007](0007-product-name-and-demo-expansion.md) | Accepted, 2026-10-22 | Solar CRM product name; additive, labelled demo customers across all stages |
 
+| [0008](0008-generic-demo-branding.md) | Accepted, 2026-10-22 | Generic Solar CRM branding across demo documents, signing pages and messages |
+
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.

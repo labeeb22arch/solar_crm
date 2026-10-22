@@ -1,5 +1,6 @@
+import { demoBrandText } from '../../lib/demoBranding.js';
 // Proposal settings (app_state key 'proposal_settings'): defaults, merging and the builder's starting inputs.
-// Every default below is a PLACEHOLDER until Sunpay confirms it (the settings page shows a yellow banner until an
+// Every default below is a PLACEHOLDER until Solar CRM confirms it (the settings page shows a yellow banner until an
 // Admin saves once). Prices are the Toolbox residential on-grid price list, used only as stand-ins.
 import { subsidyFor, isLoanMethod } from './calc.js';
 
@@ -11,9 +12,9 @@ export const DEFAULT_TERMS = [
   'Payment: As per the payment schedule in this proposal.',
   'Delivery: Material delivery within 10–15 working days from receipt of advance payment.',
   'Installation: System installation within 5–7 working days from material delivery, subject to site readiness.',
-  'Warranty: All product warranties are directly from the respective manufacturers. Sunpay Renewable Energy LLP will facilitate all claims.',
+  'Warranty: All product warranties are directly from the respective manufacturers. Solar CRM will facilitate all claims.',
   'Subsidy: The PM Surya Ghar subsidy is paid by the Government directly into the customer\'s bank account. It depends on DISCOM approval and on the name on the electricity bill matching the bank account name.',
-  'Force Majeure: Sunpay Renewable Energy LLP shall not be liable for delays due to natural calamities, strikes, government orders or supply disruptions.',
+  'Force Majeure: Solar CRM shall not be liable for delays due to natural calamities, strikes, government orders or supply disruptions.',
   'Cancellation: Orders once confirmed cannot be cancelled. The advance amount is non-refundable after material procurement.',
   'Jurisdiction: Any disputes shall be subject to the exclusive jurisdiction of courts at Deesa, Gujarat.',
 ].join('\n');
@@ -60,7 +61,7 @@ export function mergeSettings(stored = {}) {
   s.packages = PACKAGE_SIZES.map((kwp) => ({ kwp, price: byKwp.has(kwp) ? byKwp.get(kwp) : PLACEHOLDER_PRICES[kwp] }));
   s.milestones = (Array.isArray(s.milestones) ? s.milestones : DEFAULT_SETTINGS.milestones)
     .map((m) => ({ label: String(m.label || ''), pct: Number(m.pct) || 0, note: String(m.note || '') }));
-  s.terms = String(s.terms ?? '');
+  s.terms = demoBrandText(s.terms);
   return { ...s, placeholder: !stored.savedAt, savedAt: stored.savedAt || null, savedBy: stored.savedBy || null };
 }
 

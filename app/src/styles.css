@@ -28,7 +28,7 @@
   --text: #241a12;
   --text-2: #5c5045;
   --text-3: #7a6d60;
-  /* brand: Sunpay orange (darkened so white text passes AA), sun highlight, royal blue */
+  /* brand: Solar CRM orange (darkened so white text passes AA), sun highlight, royal blue */
   --accent: #b9501a;
   --accent-hover: #a2440f;
   --accent-ink: #ffffff;
@@ -487,7 +487,7 @@ a.kpi:hover .kpi-go { color: var(--tc-ink); transform: translate(2px, -2px); }
 .tabs-seg button { height: 36px; padding: 0 16px; font-size: 13.5px; }
 .count-badge { font-family: var(--font-head); font-size: 11px; font-weight: 750; background: var(--t-rose); color: #fff; border-radius: var(--r-pill); padding: 1px 7px; }
 
-/* board ("Today at Sunpay") */
+/* board ("Today at Solar CRM") */
 .board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
 .board-sec { overflow: hidden; }
 .board-h { display: flex; align-items: center; gap: 12px; padding: 16px 18px 14px; border-bottom: 1px solid var(--line-soft); background: linear-gradient(180deg, color-mix(in srgb, var(--tc-soft) 55%, var(--surface)), var(--surface)); }
@@ -1398,7 +1398,7 @@ a.kpi:hover .kpi-go { color: var(--tc-ink); transform: translate(2px, -2px); }
   .kpi:hover, .ccard:hover, .schip:hover, .doc-card:hover, .job-row:hover, .comm-strip a.cs:hover { transform: none !important; }
 }
 
-/* Customer directory & workspace — selected Sunpay design, October 2026. */
+/* Customer directory & workspace — selected Solar CRM design, October 2026. */
 .customer-directory,.customer-workspace{max-width:1440px;margin:0 auto;padding:32px 36px 56px;color:var(--text)}
 .directory-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:28px}
 .directory-heading h1,.workspace-title h1{font-size:32px;line-height:1.25;letter-spacing:-1.1px;margin:0;font-weight:750}

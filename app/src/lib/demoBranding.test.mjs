@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import { demoBrandText } from './demoBranding.js';
+import { COMPANY } from '../data/seed.js';
+import { mergeSettings } from '../docs/proposal/settings.js';
+assert.equal(COMPANY.name,'Solar CRM');
+assert.equal(demoBrandText('Warranty from Sunpay Renewable Energy LLP.'),'Warranty from Solar CRM.');
+assert.equal(demoBrandText('SUNPAY / Sunpay Renewable Energy'),'Solar CRM / Solar CRM');
+assert.equal(demoBrandText('Customer name and 5-year warranty unchanged'),'Customer name and 5-year warranty unchanged');
+const stored={terms:'Sunpay Renewable Energy LLP will facilitate claims.'};
+assert.equal(mergeSettings(stored).terms,'Solar CRM will facilitate claims.');
+assert.equal(stored.terms,'Sunpay Renewable Energy LLP will facilitate claims.');
+console.log('Generic demo branding and legacy proposal presentation passed');

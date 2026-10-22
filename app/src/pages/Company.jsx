@@ -87,7 +87,7 @@ export default function Company() {
   const dirty = ['epc', 'account', 'ifsc'].some((k) => form[k].trim() !== (assets[k] || ''));
   return (
     <div className="page">
-      <PageHead title="Company sign & stamp" sub="Sunpay's stamp, authorised signature and registration details. They are printed on the feasibility report and the DISCOM agreement. Only Admin can change them." />
+      <PageHead title="Company sign & stamp" sub="Solar CRM's stamp, authorised signature and registration details. They are printed on the feasibility report and the DISCOM agreement. Only Admin can change them." />
       <SubNav parent="team" />
       <div className="grid2 company-grid">
         <ImageCleaner title="Company stamp" hint="keeps the stamp's own colour" ink="keep" saved={assets.stamp} onUse={(url) => save({ stamp: url }, 'Company stamp saved')} onRemove={() => save({ stamp: null }, 'Company stamp removed')} />

@@ -1,4 +1,4 @@
-# Sunpay design system
+# Solar CRM design system
 
 Working specification, established 2026-10-22 from existing app/src/styles.css. This documents the current system; it does not claim a design system existed before implementation.
 

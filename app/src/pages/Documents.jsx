@@ -21,7 +21,7 @@ import { mapFeasibilityReport, getMissingFeasibilityFields } from '../docs/feasi
 const blank = (v) => !v || String(v).trim() === '' || String(v).trim() === '—';
 
 /**
- * Document maker: pick a customer once and see every document Sunpay makes for them — whether it is ready,
+ * Document maker: pick a customer once and see every document Solar CRM makes for them — whether it is ready,
  * what is still missing, and one button to open or download it. Each document is still made by its own
  * generator; this page is the single place to start from.
  */
@@ -43,7 +43,7 @@ export default function Documents({ customerId, embedded = false }) {
   const docs = useMemo(() => {
     if (!ok) return [];
     const a = assets || {};
-    const sunpayMissing = [!a.stamp && 'Sunpay company stamp', !a.sign && 'Authorised signature'].filter(Boolean);
+    const companyMissing = [!a.stamp && 'Solar CRM company stamp', !a.sign && 'Authorised signature'].filter(Boolean);
     const out = [];
 
     const q = p.quotation;
@@ -68,13 +68,13 @@ export default function Documents({ customerId, embedded = false }) {
     out.push({
       key: 'feas', icon: IconSolarPanel2, title: 'Feasibility report', page: 'feasibility', to: `/feasibility?p=${p.id}`,
       desc: 'PM Surya Ghar vendor feasibility report, 3 pages.',
-      state: feas.length ? 'todo' : sunpayMissing.length ? 'wait' : 'done',
+      state: feas.length ? 'todo' : companyMissing.length ? 'wait' : 'done',
       status: feas.length ? `${feas.length} detail${feas.length === 1 ? '' : 's'} missing` : 'Ready to download',
-      missing: [...feas, ...sunpayMissing.map((x) => `${x}`)], action: 'Create & download', core: true,
+      missing: [...feas, ...companyMissing.map((x) => `${x}`)], action: 'Create & download', core: true,
     });
 
     const signed = !!p.signature?.png;
-    const agMissing = [blank(p.consumerNo) && 'DISCOM consumer number', !signed && 'Customer signature (send the signing link)', ...sunpayMissing].filter(Boolean);
+    const agMissing = [blank(p.consumerNo) && 'DISCOM consumer number', !signed && 'Customer signature (send the signing link)', ...companyMissing].filter(Boolean);
     out.push({
       key: 'agreement', icon: IconFileText, title: 'DISCOM submission', page: 'discom_docs', to: `/grid/docs?a=${p.id}`,
       desc: 'PM Surya Ghar model agreement (Annexure 2), 4 pages, for the DISCOM file.',

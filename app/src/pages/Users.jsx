@@ -5,7 +5,7 @@ import { useSession, useToast, fdate } from '../lib/hooks.jsx';
 import { PageHead, Pill, Empty } from '../components/ui.jsx';
 import { SubNav } from './Ops.jsx';
 
-// The roles an Admin can give today, with the names Sunpay uses. (CPO-managed staff and dealers come later.)
+// The roles an Admin can give today, with the names Solar CRM uses. (CPO-managed staff and dealers come later.)
 const ROLE_OPTIONS = [
   { value: 'Admin', label: 'Admin', help: 'Everything, including users and export' },
   { value: 'Office Staff', label: 'Staff', help: 'Day-to-day work for one branch' },
