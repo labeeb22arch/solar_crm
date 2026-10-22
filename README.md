@@ -2,6 +2,10 @@
 
 The current React/Vite application is in `app/`.
 
+Repository: [labeeb22arch/solar_crm](https://github.com/labeeb22arch/solar_crm)
+
+GitHub Pages: [Solar CRM](https://labeeb22arch.github.io/solar_crm/)
+
 ## Run locally
 
 ```sh
