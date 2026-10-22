@@ -15,7 +15,7 @@ function LoginFrame({ children }) {
       <aside className="login-hero" aria-label="About Solar CRM">
         <div className="lh-brand"><AppBrand size={30} /></div>
         <div className="lh-main">
-          <div className="lh-eyebrow">Solar CRM · {api.meta.COMPANY.name}</div>
+          <div className="lh-eyebrow">Solar project management</div>
           <h2 className="lh-head">Every customer.<br />Every stage.<br /><span>One place.</span></h2>
           <p className="lh-sub">Leads, loans, installations and DISCOM paperwork for every rooftop, from the first call to commissioning.</p>
         </div>

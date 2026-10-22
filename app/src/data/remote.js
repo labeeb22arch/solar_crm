@@ -293,3 +293,15 @@ export async function commitDeliveryStock(before, after) {
   if (error) throw new Error(error.code === 'PGRST202' ? 'Delivery stock setup is required. Contact your administrator.' : error.message);
   sentState.set('inventory', JSON.stringify(after.inventory));
 }
+
+/** Additive demo pack: ignore existing IDs and confirm the server's saved records. */
+export async function insertDemoProjects(projects) {
+  const {error}=await sb.from('projects').upsert(projects.map(projectRow),{onConflict:'id',ignoreDuplicates:true});
+  if(error)throw fail('Adding demo customers',error);
+  const {data,error:readError}=await sb.from('projects').select('data').in('id',projects.map(p=>p.id));
+  if(readError)throw fail('Checking demo customers',readError);
+  const saved=(data||[]).map(row=>row.data);
+  if(saved.length!==projects.length)throw new Error('Some demo customers could not be verified. Reload and try again.');
+  saved.forEach(p=>sentProjects.set(p.id,JSON.stringify(p)));
+  return saved;
+}

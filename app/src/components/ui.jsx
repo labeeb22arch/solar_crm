@@ -251,7 +251,7 @@ export function NotFound() {
 }
 
 /** App identity: a plain sun mark plus the product name. Customer documents keep the company letterhead (DocBrand). */
-export const APP_NAME = 'Sunpay';
+export const APP_NAME = 'Solar CRM';
 export function SunMark({ size = 22 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">

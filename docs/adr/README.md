@@ -14,4 +14,6 @@ Use this log when a change affects navigation, customer data, stage progression,
 
 | [0006](0006-customer-document-checklist.md) | Accepted, 2026-10-22 | Supporting-document checklist, Drive folder and Maps links with retained link history |
 
+| [0007](0007-product-name-and-demo-expansion.md) | Accepted, 2026-10-22 | Solar CRM product name; additive, labelled demo customers across all stages |
+
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.

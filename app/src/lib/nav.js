@@ -16,7 +16,7 @@ export const NAV_SECTIONS = [
   { key: 'archive', label: null },
 ];
 export const MODULES = [
-  { key: 'today', section: 'main', tone: 'orange', page: 'today', label: 'Today', to: '/today', icon: IconHome, chord: 't', desc: 'What is happening at Sunpay today, and your tasks' },
+  { key: 'today', section: 'main', tone: 'orange', page: 'today', label: 'Today', to: '/today', icon: IconHome, chord: 't', desc: 'Today’s project work and follow-ups' },
   { key: 'partner', section: 'main', tone: 'orange', page: 'partner', label: 'My home', to: '/partner', icon: IconHome, chord: 'h', desc: 'Your customers, what needs your action, your commission' },
   // My jobs is the crews' own home screen; office roles reach a job from the customer record instead.
   { key: 'field', section: 'main', tone: 'orange', page: 'field', label: 'My jobs', to: '/field', icon: IconScan, chord: 'f', desc: 'Installation jobs, checklist and serial scanning', only: ['Technician', 'Installation Team'] },

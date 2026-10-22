@@ -1,4 +1,4 @@
-# Sunpay CRM
+# Solar CRM
 
 The current React/Vite application is in `app/`.
 
@@ -47,3 +47,6 @@ This is the current working CRM, including customer records, document workflows,
 - [Engineering follow-up](docs/engineering/BACKLOG.md)
 
 Run `npm test` from the repository root for the domain regression suite.
+
+## Additional demo records
+Admin can open Operations → Demo data → Add demo customers to add 44 labelled synthetic customers (four per stage). The pack skips existing IDs, retains existing customers and includes payments, loan/subsidy statuses, equipment, serials and warranty examples. It does not create Drive files or signatures.

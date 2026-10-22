@@ -41,7 +41,7 @@ export default function Shell() {
         <nav className="rail" aria-label="Main menu">
           <NavLink to={homeFor(session.role)} className="rail-logo-row" aria-label={`${APP_NAME} home`}>
             <span className="brand-mark"><SunMark size={26} /></span>
-            <span className="brand-text"><b>{APP_NAME}</b><small>Sunpay Renewable</small></span>
+            <span className="brand-text"><b>{APP_NAME}</b><small>Customer management</small></span>
           </NavLink>
           <SideMenu mods={mods} role={session.role} path={loc.pathname} />
           <div style={{ flex: 1 }} />

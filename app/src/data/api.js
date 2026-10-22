@@ -1,3 +1,4 @@
+import { createDemoExpansion, missingDemoRecords } from '../lib/demoExpansion.js';
 import { changeCustomerDocument, changeCustomerResource, documentDefinition } from '../lib/customerDocuments.js';
 import { currentStageTask } from '../lib/projectPipeline.js';
 import {archiveCustomer,restoreArchivedCustomer} from '../lib/customerArchive.js';
@@ -1829,4 +1830,16 @@ export async function saveCustomerResource(pid,kind,url) {
   p[field]=changeCustomerResource(p[field],url,kind,auth?.name||identityLabel()||session.role,nowIso());
   log(p,{type:'document',text:kind==='folder'?'Customer Drive folder link saved':'Customer Google Maps location saved'});
   persist();return delay(true);
+}
+
+export async function addDemoCustomers() {
+  if(!auth||auth.role!=='Admin'||session.role!=='Admin')deny('Only Admin can add demo customers');
+  const data=load();
+  const candidates=missingDemoRecords(data.projects,createDemoExpansion(calibrate(generate()),STAGES));
+  if(!candidates.length)return {added:0};
+  const inserted=cloud()?await remote.insertDemoProjects(candidates):candidates;
+  const additions=missingDemoRecords(data.projects,inserted);
+  data.projects.push(...additions);
+  for(const p of additions)data.activity.unshift({at:p.updatedAt,by:auth.name||'Admin',type:'note',pid:p.id,crn:p.crn,customer:p.name,text:'Synthetic demo customer added'});
+  persist();return {added:inserted.length};
 }

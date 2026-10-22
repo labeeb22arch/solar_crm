@@ -1,3 +1,4 @@
+import DemoDataTools from '../components/DemoDataTools.jsx';
 import { ManagedSelect } from '../components/ManagedOptions.jsx';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -27,5 +28,6 @@ export default function Operations(){
  <footer className="operations-options-footer">Changes apply to dropdown choices. Saved customer values are retained.</footer>
  </>}
  </section></div>}
+ {session.role==='Admin'&&<DemoDataTools/>}
  </div>;
 }
