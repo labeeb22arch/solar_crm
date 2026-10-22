@@ -1,3 +1,4 @@
+import CustomerDocumentChecklist from '../components/CustomerDocumentChecklist.jsx';
 import { ManagedSelect } from '../components/ManagedOptions.jsx';
 import { preparedDocumentKeys } from '../lib/documentTask.js';
 import DocumentTask from '../components/DocumentTask.jsx';
@@ -135,6 +136,7 @@ export default function Documents({ customerId, embedded = false }) {
                   const applicable=documentAvailable(p,d.key);
                   return <section className="card card-b" key={d.key}><div className="document-entry-heading"><h2>{d.key==='quote'?'Quotation':d.title}</h2><span className="small faint">{d.bucket==='current'?'Needed at this stage':prepared?'Previously prepared':applicable?'Available to prepare':'Not required'}</span></div><p className="small faint">{d.key==='quote'?'Prepare, preview and share the quotation.':d.reason}</p>{applicable||prepared?<DocumentTask customerId={p.id} docKey={d.key}/>:<p className="small">{d.key==='feas'?'For customers using a bank or personal loan.':'For PM Surya Ghar customers.'} Update project requirements below if needed.</p>}</section>;
                 })}</div>
+                <CustomerDocumentChecklist key={p.id} project={p}/>
                 <details className="document-extra"><summary>Project requirements</summary><DocumentSetup key={p.id} p={p} workflow={workflow}/></details>
                 <details className="document-extra"><summary>Existing documents & history</summary><DocGrid docs={docs.filter((d)=>d.bucket==='history'&&!['quote','proposal','feas','agreement','name'].includes(d.key))} p={p} can={can} nav={nav}/></details>
 

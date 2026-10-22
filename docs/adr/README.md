@@ -12,4 +12,6 @@ Use this log when a change affects navigation, customer data, stage progression,
 
 | [0005](0005-stage-navigation-in-main-menu.md) | Accepted, 2026-10-22 | Stages inside main Project Management menu; no second sidebar |
 
+| [0006](0006-customer-document-checklist.md) | Accepted, 2026-10-22 | Supporting-document checklist, Drive folder and Maps links with retained link history |
+
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.

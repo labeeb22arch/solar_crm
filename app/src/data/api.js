@@ -1,3 +1,4 @@
+import { changeCustomerDocument, changeCustomerResource, documentDefinition } from '../lib/customerDocuments.js';
 import { currentStageTask } from '../lib/projectPipeline.js';
 import {archiveCustomer,restoreArchivedCustomer} from '../lib/customerArchive.js';
 import {documentInboxEntry} from '../lib/documentInbox.js';
@@ -1807,4 +1808,25 @@ export async function restoreCustomer(pid){
  const p=find(pid);if(!p||!p.deletedAt||!scopeFn(session)(p)||!['Admin','Office Staff'].includes(session.role))deny();
  const restored=restoreArchivedCustomer(p,{at:nowIso(),by:auth?.name||session.role});delete p.deletedAt;delete p.deletedBy;delete p.deletedReason;Object.assign(p,restored);
  log(p,{type:'status',text:'Customer restored from Trash'});persist();return delay(true);
+}
+
+// Supporting documents reuse the customer Drive slots and existing generated-file links.
+export async function saveCustomerDocument(pid,key,patch) {
+  const p=find(pid);
+  if(!inScope(p)||!(can(session.role,'edit')||can(session.role,'link_docs')))deny();
+  const doc=documentDefinition(key),by=auth?.name||identityLabel()||session.role,at=nowIso();
+  const drive=changeCustomerDocument(p,key,patch,by,at);
+  if(patch.url!==undefined&&doc.generated)await setDocLink(pid,doc.generated==='quote'?'proposal':doc.generated,patch.url);
+  p.drive=drive;
+  log(p,{type:'document',text:`${doc.label}: ${patch.url!==undefined?'Drive file link saved':patch.checked?'marked received':'marked pending'}`});
+  persist();return delay(true);
+}
+export async function saveCustomerResource(pid,kind,url) {
+  const p=find(pid);
+  if(!inScope(p)||!(can(session.role,'edit')||can(session.role,'link_docs')))deny();
+  if(!['folder','location'].includes(kind))throw new Error('Unknown customer link');
+  const field=kind==='folder'?'driveFolder':'siteLocation';
+  p[field]=changeCustomerResource(p[field],url,kind,auth?.name||identityLabel()||session.role,nowIso());
+  log(p,{type:'document',text:kind==='folder'?'Customer Drive folder link saved':'Customer Google Maps location saved'});
+  persist();return delay(true);
 }

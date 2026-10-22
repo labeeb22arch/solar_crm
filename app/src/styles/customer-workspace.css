@@ -426,3 +426,27 @@
 .project-management>.pipeline-stage-content {width:100%;}
 @media(max-width:720px){.main-project-stage{min-height:44px;}}
 .project-management .pipeline-stage-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+
+.customer-document-checklist {margin-top:28px;}
+.customer-resource-links {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:24px;}
+.customer-resource-link {background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;}
+.customer-resource-link h3 {font-size:15px;margin:0 0 12px;}
+.customer-resource-link>small,.document-checklist-file>small,.document-link-history small {display:block;margin:7px 0;font-size:11px;}
+.customer-resource-link form,.document-checklist-file form {margin-top:12px;}
+.customer-resource-link form>.btn,.document-checklist-file form>.btn {margin:4px 6px 4px 0;}
+.document-checklist-heading {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 16px;}
+.document-checklist-heading h2 {font-size:20px;margin-bottom:6px;}
+.document-checklist-group {margin-bottom:14px;}
+.document-checklist-group>summary {list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;cursor:pointer;}
+.document-checklist-group>summary::-webkit-details-marker {display:none;}
+.document-checklist-group h3 {font-size:15px;margin:0;}
+.document-checklist-row {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;padding:16px 20px;border-top:1px solid var(--line-soft);align-items:start;}
+.document-received {display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.5;}
+.document-received input {width:17px;height:17px;margin-top:3px;accent-color:var(--accent);}
+.document-received small {display:block;font-size:11px;margin-top:3px;}
+.document-linked {color:var(--accent-text);}
+.document-checklist-file {min-width:0;}
+.document-link-history {margin-top:8px;font-size:11px;}
+.document-link-history summary {cursor:pointer;color:var(--text-2);}
+.document-link-history a {text-decoration:underline;}
+@media(max-width:720px){.customer-resource-links{grid-template-columns:minmax(0,1fr);}.document-checklist-heading{align-items:stretch;flex-direction:column;}.document-checklist-row{grid-template-columns:minmax(0,1fr);gap:10px;padding:15px;}.document-checklist-file{padding-left:29px;}.document-checklist-file input,.customer-resource-link input{font-size:16px;}.document-checklist-group>summary{padding:16px;}}

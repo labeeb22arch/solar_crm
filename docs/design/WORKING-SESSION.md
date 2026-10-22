@@ -45,3 +45,8 @@ Verification: 17 automated test files pass; production build passes. Browser ver
 The user clarified that Project Management itself should expand into its 11 stages in the main sidebar. Removed the secondary stage rail; stage customers now use the full content width. Direct stage URLs and confirmed movement remain intact.
 
 Verified main-menu expand/collapse, all 11 stage links, direct-stage selection, full-width customer content and production build. All 17 test files pass. Shared menu is available under More; physical phone rendering remains unverified.
+
+## Supporting document links — ADR 0006
+Inspected Watersun Final constants.js document labels and registration/operational checklists, plus LeadsTab and RegistrationTab. Added the deduplicated document catalogue to customer Documents, with received checkboxes, Add link → Open document buttons, retained previous links and CRM actor/time. Existing generated-file links and legacy Drive slots are reused. Added customer Drive-folder and Google Maps site links; current-location capture is initiated only by staff. No automatic Drive upload, folder creation, account switch or original-upload attribution is claimed.
+
+Validation: all 18 test files pass; production build passes. Browser checked document entries, folder editor and light-bill editor/cancel. Existing cloud customer files, checkboxes and location were not changed during testing. Physical phone/geolocation and access to the user's new Google account remain unverified.
