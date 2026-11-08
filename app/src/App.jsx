@@ -2,6 +2,7 @@ import ProjectManagement from './pages/ProjectManagement.jsx';
 import Trash from './pages/Trash.jsx';
 import Finance from './pages/Finance.jsx';
 import FinanceTabs from './components/FinanceTabs.jsx';
+import SectionTabs, { TeamHome } from './components/SectionTabs.jsx';
 import Operations from './pages/Operations.jsx';
 import FinanceTracking from './pages/FinanceTracking.jsx';
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -67,15 +68,15 @@ export default function App() {
             <Route path="today" element={G('today', <Today />)} />
             <Route path="overview" element={G('overview', <Overview />)} />
             <Route path="project-management" element={G('project_management', <ProjectManagement/>)} />
-            <Route path="trash" element={G('trash', <Trash/>)} />
-            <Route path="completed" element={G('warranty', <Warranty/>)} />
+            <Route path="trash" element={G('trash', <SectionTabs group="customers" label="Customer lists"><Trash/></SectionTabs>)} />
+            <Route path="completed" element={G('warranty', <SectionTabs group="customers" label="Customer lists"><Warranty/></SectionTabs>)} />
             <Route path="projects" element={G('projects', <Projects />)} />
             <Route path="p/:id" element={G('record', <Record />)} />
             <Route path="partner" element={G('partner', <PartnerHome />)} />
             <Route path="add-lead" element={G('add_lead', <AddLead />)} />
             <Route path="my-commission" element={G('my_commission', <MyCommission />)} />
             <Route path="stamp" element={G('stamp', <StampQueue />)} />
-            <Route path="name-check" element={G('name_check', <NameCheck />)} />
+            <Route path="name-check" element={G('name_check', <SectionTabs group="documents" label="Documents"><NameCheck /></SectionTabs>)} />
             <Route path="quotes" element={G('quotes', <Quotes />)} />
             <Route path="proposal" element={G('proposal', <Proposal />)} />
             <Route path="feasibility" element={G('feasibility', <Feasibility />)} />
@@ -91,23 +92,23 @@ export default function App() {
             <Route path="operations" element={G('operations', <Operations/>)} />
             <Route path="finance" element={G('finance', <FinanceTabs><Finance/></FinanceTabs>)} />
             <Route path="finance/received" element={G('finance', <FinanceTabs><Finance/></FinanceTabs>)} />
-            <Route path="finance/expected" element={G('finance', <FinanceTabs><Finance/></FinanceTabs>)} />
+            <Route path="finance/expected" element={<Navigate to="/finance" replace />} />
             <Route path="money/subsidy" element={G('subsidy_tracking', <FinanceTabs><FinanceTracking kind="subsidy" /></FinanceTabs>)} />
             <Route path="money/loans" element={G('loan_tracking', <FinanceTabs><FinanceTracking kind="loan" /></FinanceTabs>)} />
             <Route path="money" element={<Navigate to="/finance" replace />} />
             {/* <Route path="money/invoices" element={G('invoices', <Invoices />)} /> */}
-            <Route path="money/cp" element={G('cp_comm', <Commissions kind="cp" />)} />
-            <Route path="money/install" element={G('inst_comm', <Commissions kind="install" />)} />
+            <Route path="money/cp" element={G('cp_comm', <FinanceTabs><Commissions kind="cp" /></FinanceTabs>)} />
+            <Route path="money/install" element={G('inst_comm', <FinanceTabs><Commissions kind="install" /></FinanceTabs>)} />
             <Route path="warranty" element={G('warranty', <Warranty />)} />
-            <Route path="team" element={<Navigate to="/team/attendance" replace />} />
-            <Route path="team/attendance" element={G('attendance', <Attendance />)} />
-            <Route path="team/users" element={G('users', <Users />)} />
+            <Route path="team" element={<TeamHome />} />
+            <Route path="team/attendance" element={G('attendance', <SectionTabs group="team" label="Team"><Attendance /></SectionTabs>)} />
+            <Route path="team/users" element={G('users', <SectionTabs group="team" label="Team"><Users /></SectionTabs>)} />
             {/* <Route path="team/company" element={G('company', <Company />)} /> */}
             {/* <Route path="team/proposal-settings" element={G('proposal_settings', <ProposalSettings />)} /> */}
             {/* <Route path="company" element={<Navigate to="/team/company" replace />} /> */}
-            <Route path="activity" element={G('activity', <Activity />)} />
-            <Route path="chat" element={G('chat', <Chat />)} />
-            <Route path="documents" element={G('documents', <Documents />)} />
+            <Route path="activity" element={G('activity', <SectionTabs group="team" label="Team"><Activity /></SectionTabs>)} />
+            <Route path="chat" element={G('chat', <SectionTabs group="team" label="Team"><Chat /></SectionTabs>)} />
+            <Route path="documents" element={G('documents', <SectionTabs group="documents" label="Documents"><Documents /></SectionTabs>)} />
             <Route path="more" element={G('more', <More />)} />
             <Route path="*" element={<NotFound />} />
           </Route>

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {cleanAttendance,attendanceForDay} from './attendance.js';
+const record=cleanAttendance({date:'2026-10-26',status:'present',checkIn:'09:10',note:' Site duty '},'2026-10-26','Admin','2026-10-26T10:00:00Z');
+assert.equal(record.source,'manual');assert.equal(record.note,'Site duty');
+assert.throws(()=>cleanAttendance({date:'2026-02-30',status:'present'},'2026-10-26','Admin','now'),/valid attendance/);
+assert.throws(()=>cleanAttendance({date:'2026-10-27',status:'present'},'2026-10-26','Admin','now'),/valid attendance/);
+assert.throws(()=>cleanAttendance({date:'2026-10-26',status:'absent',checkIn:'09:00'},'2026-10-26','Admin','now'),/only for/);
+const row={days:['present','off'],entries:{'2026-10-26':record}};
+assert.equal(attendanceForDay(row,'2026-10-26','2026-10-22').source,'manual');
+assert.equal(attendanceForDay(row,'2026-10-25','2026-10-22'),null,'sample attendance must not appear as a new day');
+assert.equal(attendanceForDay(row,'2026-10-22','2026-10-22').status,'off');
+console.log('Attendance validation and dated record checks passed');

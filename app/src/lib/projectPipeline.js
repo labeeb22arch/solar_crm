@@ -12,6 +12,15 @@ const WORK = {
   discom_inspection: ['Final inspection', 'Follow up inspection and handover before completing the project.', 'Review inspection', 'stage'],
   completed: ['Handover & warranty', 'Review the finished installation, coverage, serials and service history.', 'View warranty record', 'completed'],
 };
+// One progress model for customers (ADR 0011): five phases that group the 11 working stages.
+export const PHASES = [
+  { id: 'booking', label: 'Booking', stages: ['leads'] },
+  { id: 'finance', label: 'Finance', stages: ['pending_loans'] },
+  { id: 'install', label: 'Installation', stages: ['material_procurement', 'pending_installation'] },
+  { id: 'grid', label: 'DISCOM & meter', stages: ['post_installation_docs', 'discom_submissions', 'meter_installation', 'system_commissioning', 'meter_flag', 'discom_inspection'] },
+  { id: 'done', label: 'Completed', stages: ['completed'] },
+];
+export const phaseIndex = (stage) => Math.max(0, PHASES.findIndex((p) => p.stages.includes(stage)));
 export function pipelineWork(stage) {
   const [title, description, action, destination] = WORK[stage] || WORK.leads;
   return { title, description, action, destination };
@@ -19,8 +28,8 @@ export function pipelineWork(stage) {
 export function pipelineUrl(project) {
   const { destination } = pipelineWork(project.stage || project.summary?.stage);
   const id = encodeURIComponent(project.id);
-  if (destination === 'completed') return `/completed?p=${id}`;
-  if (destination === 'bom') return `/supply/bom?p=${id}`;
+  if (destination === 'completed') return `/p/${id}?tab=overview&work=completed`;
+  if (destination === 'bom') return `/p/${id}?tab=overview&work=bom`;
   if (destination === 'stage') return `/p/${id}?stage=open`;
   return `/p/${id}?tab=${destination}`;
 }

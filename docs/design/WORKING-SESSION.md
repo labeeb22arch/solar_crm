@@ -60,3 +60,40 @@ Verified the cloud insert readback for the 44-record pack and reloaded the app: 
 Updated signing pages, WhatsApp share text, proposal pages and terms, feasibility/agreement vendor names, procurement PDF heading, company defaults and deployment author labels to Solar CRM. Removed the unused former logo. Legacy proposal terms normalize for display without changing stored customer/signature records. Existing storage keys and authentication identities remain compatible.
 
 Validation: all 20 test files pass and production build passes. Source scan found no old visible brand copy; remaining old strings are compatibility keys and normalization fixtures. Browser verified the Solar CRM login. No customer financial or signed records changed.
+
+## Admin workflow repair — 2026-10-26
+User reports navigation loops, missing money on Today, overcomplicated document making, wrong loan/subsidy steps, excessive Operations parameters, read-only attendance and a broken serial scanner. Accepted direction is ADR 0009. Focus is Admin; preserve other role restrictions and all financial/signature history. Reference: solarflow.deeprootsystems.in (credentials remain outside this note). Testing live flows read-only, then verifying mutations with isolated local sample data. Reference labels and exact observed failures are recorded in the audit notes as they are checked.
+
+Further user clarification: keep only five essential supporting-document checks (Aadhaar front, PAN, electricity bill, bank passbook/cheque, site survey photos). Other previously linked/received documents stay available under Other saved documents. Remove the Overview Verification block, preserving stored verification history. Reference inspected in its no-signup Admin workspace: subsidy tags Inprocess/Redeemed/Returned/Approved/Received (timeline also permits Rejected); loan tags Inprocess/Sanctioned/Returned/Reject/1st Payment/2nd Payment/Total Received. Reference loan supporting checks are Vendor Feasibility, Site Feasibility and Digital Certificate. Default Operations is panel/inverter brands; optional settings remain collapsed. Stage assignment closes on successful save, and stage actions close their drawer before switching the customer tab.
+
+Confirmed: “close after email signing” means dismiss Login after successful email sign-in. Authenticated cloud sessions now show loading/retry while records load rather than leaving the sign-in form visible. Local Admin email sign-in was checked through the browser. Expected payments table also removed from Finance overview.
+
+Follow-up: user also requires signing completion to dismiss the signing view. Customer document previews and saved files open inline; Finance subsidy/loan tag buttons remain in place. Public signing must never redirect an unauthenticated customer into the Admin record. Browser-owned tabs may refuse automatic close, so retain a short completion confirmation.
+
+User requested removal of “View all payment records” from the customer Finance card. Removed that navigation link; customer receipt details remain in place.
+
+User-approved Finance refinement: show Loan and Subsidy concurrently side by side in the customer record, with all status tags as small selectable chips and each history below. Clicking a tag opens its dated save/cancel form directly; remove the extra section toggle and Edit tag button. Stack columns on phones. Reuse existing tracking API/history.
+
+Correction to previous Finance layout: user wants Payments / Loan / Subsidy as top tabs within Finance, matching the existing customer workspace tab style. Supersedes simultaneous side-by-side panels. Each tracking tab contains its status chips and history; switching stays inside the customer.
+
+Accepted follow-up: Finance status chips open a confirm dialog and append a dated history entry immediately, without the edit/save form. Rejection retains a reason field. History is always visible before optional loan-document checks. Received documents must identify the exact returned document and open a read-only preview inline.
+
+2026-10-27 follow-up: show total project value, collected receipts and outstanding in the main Overview and customer Overview, reusing the same financial scope/ledger. Customer BOM, name checking and completed warranty actions open within the record; only external services such as Maps/WhatsApp remain external.
+
+Admin walkthrough found and fixed two concrete failures: Current stage referenced an undefined params variable; BOM quantity inputs used min=0.01 with step=1, causing valid integer quantities to fail browser validation. Confirmed drawer opening and successful synthetic BOM v1 save after repair. Browser preview reconnection succeeded; PDF-download automation timed out and is not certified by that attempt.
+
+Signing completion: the Admin sharing dialog also closes when the same signing token is confirmed signed by the existing project subscription. A different/replaced link cannot close the current dialog.
+
+2026-10-27: remove duplicate Loans/Subsidy status-summary cards from the Finance overview; keep the existing top navigation tabs.
+
+2026-10-27 accepted payment simplification: customer Payments shows the full receipt history and one Add payment action, with amount, type, reference and payment date. Remove search, numbered milestones and payment-plan editing from this view. Preserve stored plans/allocations; use the same receipt API. Record actor and entry timestamp automatically and show them separately from the payment date; do not invent missing legacy audit metadata.
+
+2026-10-27: stage lists use two parallel customer cards per row on desktop and stack on phones. Keep latest updates first, with relative last-updated time at each card’s top and exact stage-entry timestamp below. Confirmed stage events retain structured from/to/time in the existing timeline. Customer receipt history is a table; actor and automatic recording date/time appear in each receipt footer, timestamp aligned bottom right. Newly recorded receipts sort first even if backdated.
+
+2026-10-27: simplify Project Management cards to customer name, CRN, current stage, relative last-updated time and next-stage action only. Remove city/capacity, task descriptions, lateness, stage-entry date and document shortcuts from these cards. Keep exact stage timestamps in customer history and preserve two-column/latest-first behavior. Today keeps its existing work context.
+
+2026-10-27 card positioning: name left, CRN top right; current stage and bordered next-stage button share a row. Updated-by appears bottom left, relative update time bottom right. The existing confirmation dialog remains required before stage mutation. Latest updater comes from matching recorded change metadata; older records without an attributable actor say Not recorded. New changes save the actual authenticated actor in the existing customer/timeline record.
+
+2026-11-07: user asked to hide the sidebar Project Management stage menu as a duplicate. Commented out, route kept (ADR 0010). Remaining audit proposal, not accepted: group the sidebar into Today, Customers, Documents, Money, Team.
+
+2026-11-08: user asked to fix all six audit items and improve phone button positions. Implemented as ADR 0011. Open questions for the user: native-speaker review of Gujarati/Hindi wording; whether office screens and the shared frame (bottom tabs, search) should also be translated.

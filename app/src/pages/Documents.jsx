@@ -39,7 +39,7 @@ export default function Documents({ customerId, embedded = false }) {
 
   useEffect(()=>setSelectedDocument(null),[pid]);
   const workflow = ok ? documentRules(p) : null;
-  const selectedKey=selectedDocument||(workflow?.classify('feas').bucket==='current'?'feas':workflow?.classify('agreement').bucket==='current'?'agreement':'quote');
+  const selectedKey=selectedDocument||(['quote','feas','agreement'].includes(params.get('doc'))?params.get('doc'):null)||(workflow?.classify('feas').bucket==='current'?'feas':workflow?.classify('agreement').bucket==='current'?'agreement':'quote');
   const docs = useMemo(() => {
     if (!ok) return [];
     const a = assets || {};
@@ -134,7 +134,7 @@ export default function Documents({ customerId, embedded = false }) {
                 <div className="simple-document-list">{docs.filter(d=>d.key===selectedKey&&['quote','feas','agreement'].includes(d.key)).map(d=>{
                   const prepared=preparedDocumentKeys(p).includes(d.key);
                   const applicable=documentAvailable(p,d.key);
-                  return <section className="card card-b" key={d.key}><div className="document-entry-heading"><h2>{d.key==='quote'?'Quotation':d.title}</h2><span className="small faint">{d.bucket==='current'?'Needed at this stage':prepared?'Previously prepared':applicable?'Available to prepare':'Not required'}</span></div><p className="small faint">{d.key==='quote'?'Prepare, preview and share the quotation.':d.reason}</p>{applicable||prepared?<DocumentTask customerId={p.id} docKey={d.key}/>:<p className="small">{d.key==='feas'?'For customers using a bank or personal loan.':'For PM Surya Ghar customers.'} Update project requirements below if needed.</p>}</section>;
+                  return <section className="card card-b" key={d.key}><div className="document-entry-heading"><h2>{d.key==='quote'?'Quotation':d.title}</h2><span className="small faint">{d.bucket==='current'?'Needed at this stage':prepared?'Previously prepared':applicable?'Available to prepare':'Not required'}</span></div><p className="small faint">{d.key==='quote'?'Prepare, preview and share the quotation.':d.reason}</p>{applicable||prepared?<DocumentTask key={p.id+d.key} customerId={p.id} docKey={d.key} openEditor={params.get('open')==='1'&&params.get('doc')===d.key}/>:<p className="small">{d.key==='feas'?'For customers using a bank or personal loan.':'For PM Surya Ghar customers.'} Update project requirements below if needed.</p>}</section>;
                 })}</div>
                 <CustomerDocumentChecklist key={p.id} project={p}/>
                 <details className="document-extra"><summary>Project requirements</summary><DocumentSetup key={p.id} p={p} workflow={workflow}/></details>
@@ -233,6 +233,6 @@ function DocumentSetup({ p, workflow }) {
   return <section className="document-setup card card-b">
     <div className="row" style={{ flexWrap: 'wrap', gap: 14, justifyContent: 'space-between' }}><div><b>{SCHEMES.find(([key]) => key === p.scheme)?.[1] || 'Scheme not selected'}</b><div className="small faint">{p.paymentMethod} · {workflow.loan ? 'Loan documents required' : 'Self-funded'}</div></div>{api.canDo('edit') && <button className="btn sm" onClick={() => { setScheme(p.scheme || ''); setPayment(p.paymentMethod || 'Cash'); setEditing(!editing); }}>Change requirements</button>}</div>
     {!p.scheme && <p className="small">Choose the scheme to show the correct submission documents.</p>}
-    {editing && <form className="document-setup-form" onSubmit={save}><label className="fld"><span>Project scheme</span><ManagedSelect category="schemes" placeholder="Choose scheme" className="select" value={scheme} onChange={(e) => setScheme(e.target.value)} disabled={busy}/></label><label className="fld"><span>Payment method</span><ManagedSelect category="payment_methods" className="select" value={payment} onChange={(e) => setPayment(e.target.value)} disabled={busy}/></label><button className="btn primary" disabled={busy}>Save</button>{error && <div className="form-err" role="alert">{error}</div>}</form>}
+    {editing && <form className="document-setup-form" onSubmit={save}><label className="fld"><span>Project scheme</span><ManagedSelect category="schemes" placeholder="Choose scheme" className="select" value={scheme} onChange={(e) => setScheme(e.target.value)} disabled={busy}/></label><label className="fld"><span>Payment method</span><ManagedSelect category="payment_methods" className="select" value={payment} onChange={(e) => setPayment(e.target.value)} disabled={busy}/></label><button type="button" className="btn" disabled={busy} onClick={()=>setEditing(false)}>Cancel</button><button className="btn primary" disabled={busy}>Save</button>{error && <div className="form-err" role="alert">{error}</div>}</form>}
   </section>;
 }

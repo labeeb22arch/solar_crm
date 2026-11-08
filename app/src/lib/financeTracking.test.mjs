@@ -7,7 +7,7 @@ assert.equal(eligibleTracking({scheme:'pm_surya_ghar'},'subsidy'),true);
 assert.equal(eligibleTracking({type:'Residential'},'subsidy'),false);
 assert.equal(eligibleTracking({subsidy:[{status:'Applied'}]},'subsidy'),true);
 assert.equal(trackingStatus({subsidy:[{status:'Credited to customer account'}]},'subsidy'),'received');
-assert.equal(trackingStatus({tracks:{finance:[{key:'sanction',status:'done'}]}},'loan'),'approved');
+assert.equal(trackingStatus({tracks:{finance:[{key:'sanction',status:'done'}]}},'loan'),'sanctioned');
 const applied=appendTracking({},'subsidy',{status:'applied',date:'2026-10-01',note:'Filed'},context);
 const rejected=appendTracking(applied,'subsidy',{status:'rejected',date:'2026-10-03',note:'Name mismatch'},{...context,id:'2',previousStatus:'applied'});
 const retry=appendTracking(rejected,'subsidy',{status:'reapply',date:'2026-10-05',note:'Corrected papers'},{...context,id:'3',previousStatus:'rejected'});
@@ -22,3 +22,13 @@ assert.throws(()=>appendTracking({},'subsidy',{status:'applied',date:'2026-02-30
 assert.throws(()=>appendTracking({},'subsidy',{status:'received',date:'2026-10-22'},context),/valid date/);
 assert.throws(()=>appendTracking({},'loan',{status:'approved',date:'2026-10-20',amount:-1},context),/amount/);
 console.log('Loan and subsidy status/history checks passed');
+
+// Existing history is retained while old state values display reference-aligned tags.
+const old={financeTracking:{loan:{status:'approved',history:[{status:'approved',date:'2026-10-01'}]}}};
+assert.equal(trackingStatus(old,'loan'),'sanctioned');
+assert.equal(old.financeTracking.loan.history[0].status,'approved');
+assert.equal(trackingStatus({financeTracking:{subsidy:{status:'submitted'}}},'subsidy'),'inprocess');
+const release=appendTracking({},'loan',{status:'first_payment',date:'2026-10-20',amount:10000},context);
+assert.equal(release.status,'first_payment');
+assert.equal(release.history[0].amount,10000);
+assert.equal(trackingStatus({subsidy:[{status:'Returned'}]},'subsidy'),'returned');

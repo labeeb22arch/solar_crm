@@ -16,7 +16,7 @@ export default function ProjectManagement() {
  const work=pipelineWork(stage.id);
  return <div className="project-management pipeline-page"><PageHead title={stage.label} sub={work.description}/>
  <div className="pipeline-toolbar"><input className="input" aria-label="Search projects" placeholder="Search customer, CRN or city" value={query} onChange={e=>setQuery(e.target.value)}/><label className="row small"><input type="checkbox" checked={attention} onChange={e=>setAttention(e.target.checked)}/>Needs attention</label></div>
- <section className="pipeline-stage-content" aria-label={stage.label}><header className="pipeline-stage-heading"><span className="detail-label">Stage {api.meta.STAGES.indexOf(stage)+1} of {api.meta.STAGES.length}</span><small className="faint">{matching.filter(r=>r.stage===stage.id).length} customers · Most recently updated first</small></header>{!rows?<Empty>Loading projects…</Empty>:<PipelineCustomers rows={matching.filter(r=>r.stage===stage.id)} onMove={api.canDo('edit')?setMoving:undefined}/>}</section>
+ <section className="pipeline-stage-content" aria-label={stage.label}><header className="pipeline-stage-heading"><span className="detail-label">Stage {api.meta.STAGES.indexOf(stage)+1} of {api.meta.STAGES.length}</span><small className="faint">{matching.filter(r=>r.stage===stage.id).length} customers · Most recently updated first</small></header>{!rows?<Empty>Loading projects…</Empty>:<PipelineCustomers twoColumns rows={matching.filter(r=>r.stage===stage.id)} onMove={api.canDo('edit')?setMoving:undefined}/>}</section>
  {moving&&<StageMoveDialog project={moving} onClose={()=>setMoving(null)} onMoved={()=>toast('Project stage updated')}/>}
  </div>;
 }

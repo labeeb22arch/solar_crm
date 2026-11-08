@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {createScanSession} from './scanSession.js';
+const s=createScanSession();let tracks=0,controls=0;
+const stream=()=>({getTracks:()=>[{stop:()=>tracks++}]});const control=()=>({stop:()=>controls++});
+const first=s.begin();s.stop();
+assert.equal(s.attachStream(first,stream()),false);assert.equal(tracks,1,'late camera permission must release its stream');
+assert.equal(s.attachControl(first,control()),false);assert.equal(controls,1);
+const second=s.begin();assert.equal(s.attachStream(second,stream()),true);assert.equal(s.attachControl(second,control()),true);s.stop();
+assert.equal(tracks,2);assert.equal(controls,2);assert.equal(s.valid(second),false,'cancelled photo result must be ignored');
+const third=s.begin();assert.equal(s.valid(third),true);s.begin();assert.equal(s.valid(third),false);
+console.log('Scanner cancellation, late permission and stream cleanup checks passed');

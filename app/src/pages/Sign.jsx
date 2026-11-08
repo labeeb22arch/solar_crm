@@ -148,6 +148,11 @@ export default function SignPage({ token }) {
 
   useEffect(() => { api.getSignRequest(token).then(setReq); }, [token]);
   const isProposal = req?.kind === 'proposal';
+  useEffect(() => {
+    if (!done) return;
+    if (window.parent !== window) window.parent.postMessage({ type: 'solarcrm-signing-complete', token }, window.location.origin);
+    else if (window.opener || window.history.length === 1) window.close();
+  }, [done, token]);
   useEffect(() => { document.title = isProposal ? 'Your solar proposal · Solar CRM' : 'Sign your agreement · Solar CRM'; }, [isProposal]);
 
   const phone = api.meta.COMPANY.phone;
@@ -162,16 +167,16 @@ export default function SignPage({ token }) {
 
   let body;
   if (!req) body = <p className="sg-lead">Loading…</p>;
-  else if (isProposal) body = <ProposalBody req={req} token={token} done={done} setDone={setDone} setReq={setReq} linkError={linkError} contact={contact} />;
   else if (done) {
     body = (
       <div className="sg-msg ok">
         <IconCircleCheck size={48} />
         <h1>Thank you, {req.firstName}!</h1>
-        <p>Your signature has been received. Solar CRM will add it to your agreement and DISCOM documents. You can close this page now.</p>
+        <p>Your signature has been saved. You can close this page now.</p>
       </div>
     );
-  } else if (req.status === 'unknown' || req.status === 'signed' || req.expired) {
+  } else if (isProposal) body = <ProposalBody req={req} token={token} done={done} setDone={setDone} setReq={setReq} linkError={linkError} contact={contact} />;
+  else if (req.status === 'unknown' || req.status === 'signed' || req.expired) {
     const t = req.status === 'signed' ? ['This agreement is already signed', 'This link has already been used, so nothing more is needed from you. If you think something is wrong, please contact Solar CRM.']
       : req.status === 'unknown' ? ['This link does not work', 'The link may be incomplete, or a newer link has been sent to you. Please contact Solar CRM for a new link.']
         : ['This link has expired', 'Signing links work for 7 days. Please contact Solar CRM and we will send you a new one.'];
@@ -217,14 +222,8 @@ function ProposalBody({ req, token, done, setDone, setReq, linkError, contact })
   const open = !signed && !req.expired;
   const submit = async (png, how) => {
     await api.submitSignature(token, png, how);
-    setReq(await api.getSignRequest(token));
     setDone(true);
-    setTimeout(() => {
-      // Scroll the window (not the clipped page box) to the acceptance page, which now shows the signature.
-      const pages = document.querySelectorAll('.pp-fit .pp-page');
-      const last = pages[pages.length - 1];
-      if (last) window.scrollTo({ top: window.scrollY + last.getBoundingClientRect().top - 12, behavior: 'smooth' });
-    }, 300);
+
   };
   return (
     <>

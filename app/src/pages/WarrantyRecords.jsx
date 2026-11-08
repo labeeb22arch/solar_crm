@@ -1,3 +1,4 @@
+import InlineFilePreview from '../components/InlineFilePreview.jsx';
 import { IconAlertTriangle,IconX } from '@tabler/icons-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import WarrantyHistory from './WarrantyHistory.jsx';
@@ -9,6 +10,7 @@ import { PageHead, CustName, Empty, Pill } from '../components/ui.jsx';
 const show = (value) => value === '' || value == null ? 'Not recorded' : value;
 const date = (value) => value ? fdateY(value) : 'Not recorded';
 export default function WarrantyRecords({ customerId, embedded = false, coverageOnly = false }) {
+  const [filePreview,setFilePreview]=useState('');
   const [params]=useSearchParams();
   const selected=customerId||params.get('p');
   const [issueCustomer,setIssueCustomer]=useState(null);
@@ -17,12 +19,13 @@ export default function WarrantyRecords({ customerId, embedded = false, coverage
   const [rows] = useData(() => customerId ? api.getWarranty(customerId).then((record) => [record]) : api.listWarranty(), [customerId, session.role, session.branch, version]);
   const [search, setSearch] = useState('');
   const list = (rows || []).filter((r) => `${r.name} ${r.crn} ${r.invoiceNumber} ${r.moduleSerials.join(' ')} ${r.inverterSerial}`.toLowerCase().includes(search.toLowerCase())&&(!selected||r.pid===selected));
+  if(filePreview)return <InlineFilePreview url={filePreview} title="Warranty document" onClose={()=>setFilePreview('')}/>;
   return <div className={embedded ? "embedded-warranty" : "page"}>
     {!embedded && <PageHead title={selected?"Warranty record":"Completed"} sub={selected?"Installation details, coverage and serial numbers. Record service issues below.":"Finished projects, warranty cover and service history."}>{(api.canDo('edit')||api.canDo('field'))&&<button className="btn warranty-warning" title="Report warranty issue" aria-label="Report warranty issue" disabled={!rows?.length} onClick={()=>setIssueCustomer(selected||rows[0].pid)}><IconAlertTriangle size={22}/>Report issue</button>}</PageHead>}
     {!embedded&&selected&&<Link className="btn" style={{marginBottom:18}} to="/completed">← All completed customers</Link>}
     {!embedded && !selected && <input className="input" style={{ maxWidth: 400, marginBottom: 18 }} aria-label="Search warranty records" placeholder="Search customer, invoice or serial number" value={search} onChange={(e) => setSearch(e.target.value)} />}
     {rows === null ? <div className="card card-b">Loading warranties…</div> : !list.length ? <Empty>No matching completed customers.</Empty> : list.map((r) => <details className={"card warranty-record"+(selected?" full-record":"")} key={r.pid} open={!!selected || embedded || undefined}>
-      <summary><div><strong>{r.name}</strong><div className="small faint">{r.crn} · {r.city} · {r.kwp} kWp</div></div><div><span className="small faint">Invoice date</span><div>{date(r.invoiceDate)}</div></div><div><span className="small faint">Installation cover until</span><div>{date(r.terms[0].until)} · {r.workmanshipYears === '' ? 'Years not recorded' : `${r.workmanshipYears} years`}</div></div><button type="button" className="btn icon ghost warranty-warning" title="Report warranty issue" aria-label={`Report warranty issue for ${r.name}`} onClick={e=>{e.preventDefault();e.stopPropagation();setIssueCustomer(r.pid);}}><IconAlertTriangle size={21}/></button><span className="small">{r.issues.filter((i) => i.status !== 'resolved').length} open issues</span><Link className="btn sm" to={`/completed?p=${r.pid}`} onClick={e=>e.stopPropagation()}>View warranty record</Link></summary>
+      <summary><div><strong>{r.name}</strong><div className="small faint">{r.crn} · {r.city} · {r.kwp} kWp</div></div><div><span className="small faint">Invoice date</span><div>{date(r.invoiceDate)}</div></div><div><span className="small faint">Installation cover until</span><div>{date(r.terms[0].until)} · {r.workmanshipYears === '' ? 'Years not recorded' : `${r.workmanshipYears} years`}</div></div><button type="button" className="btn icon ghost warranty-warning" title="Report warranty issue" aria-label={`Report warranty issue for ${r.name}`} onClick={e=>{e.preventDefault();e.stopPropagation();setIssueCustomer(r.pid);}}><IconAlertTriangle size={21}/></button><span className="small">{r.issues.filter((i) => i.status !== 'resolved').length} open issues</span>{!embedded&&<Link className="btn sm" to={`/completed?p=${r.pid}`} onClick={e=>e.stopPropagation()}>View warranty record</Link>}</summary>
       <div className="card-b">
         <div className="row" style={{ justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}><CustName id={r.pid} name={r.name} crn={r.crn} /><Pill status={r.registered ? 'done' : 'waiting_third'}>{r.registered ? 'Warranty registered' : 'Registration pending'}</Pill></div>
         <>
@@ -31,7 +34,7 @@ export default function WarrantyRecords({ customerId, embedded = false, coverage
           {!coverageOnly&&<>          <div className="warranty-fields"><section><h3>Panels · {r.moduleSerials.length} serials recorded</h3><dl className="kv"><dt>Manufacturer</dt><dd>{show(r.moduleMake)}</dd><dt>Model / technology</dt><dd>{show(r.moduleModel)}</dd><dt>Rating</dt><dd>{r.moduleWp ? `${r.moduleWp} Wp` : 'Not recorded'}</dd></dl><h4>Panel serial numbers</h4>{r.moduleSerials.length ? <ol className="warranty-serials">{r.moduleSerials.map((serial, i) => <li key={i}>{serial}</li>)}</ol> : <p className="small faint">No panel serial numbers recorded.</p>}</section>
           <section><h3>Inverter</h3><dl className="kv"><dt>Manufacturer</dt><dd>{show(r.inverterMake)}</dd><dt>Model</dt><dd>{show(r.inverterModel)}</dd><dt>Capacity</dt><dd>{r.inverterCapacity ? `${r.inverterCapacity} kW` : 'Not recorded'}</dd><dt>Phase / type</dt><dd>{show(r.inverterPhase)}</dd><dt>Serial number</dt><dd className="mono">{show(r.inverterSerial)}</dd></dl><h3>Other equipment</h3><dl className="kv"><dt>Mounting structure</dt><dd>{show(r.structure)}</dd><dt>Earthing / surge protection</dt><dd>{show(r.earthing)}</dd></dl></section></div>
 </>}
-          <h3>Registration & service</h3><dl className="kv"><dt>Certificate / registration</dt><dd>{show(r.certificateNumber)}</dd><dt>Certificate document</dt><dd>{/^https?:\/\//i.test(r.certificateUrl || '') ? <a href={r.certificateUrl} target="_blank" rel="noopener noreferrer">Open warranty document</a> : 'Not recorded'}</dd><dt>Service contact</dt><dd>{show(r.supportContact)}</dd><dt>Coverage & service notes</dt><dd style={{ whiteSpace: 'pre-wrap' }}>{show(r.notes)}</dd></dl>
+          <h3>Registration & service</h3><dl className="kv"><dt>Certificate / registration</dt><dd>{show(r.certificateNumber)}</dd><dt>Certificate document</dt><dd>{/^https?:\/\//i.test(r.certificateUrl || '') ? <button type="button" className="btn sm" onClick={()=>setFilePreview(r.certificateUrl)}>View warranty document</button> : 'Not recorded'}</dd><dt>Service contact</dt><dd>{show(r.supportContact)}</dd><dt>Coverage & service notes</dt><dd style={{ whiteSpace: 'pre-wrap' }}>{show(r.notes)}</dd></dl>
         </>
         <WarrantyHistory record={r} onSaved={() => setVersion((v) => v + 1)} />
       </div>

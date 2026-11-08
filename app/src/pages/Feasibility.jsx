@@ -22,9 +22,9 @@ const INPUTS = {
 };
 const safe = (v, d) => (v || d).replace(/[^a-zA-Z0-9_-]/g, '_');
 
-export default function Feasibility() {
+export default function Feasibility({customerId, embedded=false}) {
   const [params, setParams] = useSearchParams();
-  const pid = params.get('p');
+  const pid = customerId || params.get('p');
   const [p] = useData(() => (pid ? api.getProject(pid) : Promise.resolve(null)), [pid]);
   const [assets] = useData(() => api.getCompanyAssets(), []);
   const toast = useToast();
@@ -72,10 +72,10 @@ export default function Feasibility() {
   if (ok && !documentRules(p).loan) return <div className="page"><PageHead title="Feasibility report"><BackToDocs pid={pid}/></PageHead><Empty>This customer is self-funded. A loan feasibility report is not required.</Empty></div>;
   return (
     <div className="page">
-      <PageHead title="Feasibility report" sub="The vendor feasibility report for PM Surya Ghar (3 pages), filled in from the customer's details. Fill in anything missing on the left, check the preview, then download the PDF."><BackToDocs pid={pid} /></PageHead>
+      <PageHead title="Feasibility report" sub="The vendor feasibility report for PM Surya Ghar (3 pages), filled in from the customer's details. Fill in anything missing on the left, check the preview, then download the PDF.">{!embedded && <BackToDocs pid={pid} />}</PageHead>
       <div className="grid2 feas-grid">
         <div className="card card-b stack">
-          <CustomerPicker filter={(r) => ['Bank Solar Loan', 'Personal Loan'].includes(r.paymentMethod)} value={pid} onChange={(id) => setParams({ p: id })} />
+          {!embedded && <CustomerPicker filter={(r) => ['Bank Solar Loan', 'Personal Loan'].includes(r.paymentMethod)} value={pid} onChange={(id) => setParams({ p: id })} />}
           {ok && (
             <>
               <div className="feas-missing">

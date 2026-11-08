@@ -3,14 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   IconSun, IconMoon, IconHome, IconTable, IconSearch, IconScan, IconMenu2, IconX, IconChevronDown, IconCheck, IconRefresh,
-  IconLogout, IconUserPlus, IconDownload, IconCoin, IconCalendarEvent, IconStack2, IconLayoutDashboard, IconTruck, IconSelector,
+  IconLogout, IconBulb, IconUserPlus, IconDownload, IconCoin, IconCalendarEvent, IconStack2, IconLayoutDashboard, IconTruck, IconSelector,
 } from '@tabler/icons-react';
 import * as api from '../data/api.js';
-import { modulesFor, isModuleActive, NAV_SECTIONS } from '../lib/nav.js';
+import { modulesFor, menuModulesFor, isModuleActive, NAV_SECTIONS } from '../lib/nav.js';
 import { homeFor, isReadOnly, pageAllowed } from '../lib/access.js';
 import { UiCtx, useHotkeys, useSession, useTheme, useToast, useData } from '../lib/hooks.jsx';
 import { ReadOnlyBanner, SunMark, APP_NAME, Avatar } from './ui.jsx';
 import SearchBox from './Search.jsx';
+import { PageTip, FirstTour } from './Help.jsx';
+import { resetHelp } from '../lib/helpTips.js';
 
 export default function Shell() {
   const [theme, toggleTheme] = useTheme();
@@ -43,7 +45,7 @@ export default function Shell() {
             <span className="brand-mark"><SunMark size={26} /></span>
             <span className="brand-text"><b>{APP_NAME}</b><small>Customer management</small></span>
           </NavLink>
-          <SideMenu mods={mods} role={session.role} path={loc.pathname} />
+          <SideMenu mods={menuModulesFor(session.role, { withSoon: true })} role={session.role} path={loc.pathname} />
           <div style={{ flex: 1 }} />
           <div className="rail-user">
             <RolePicker session={session} placement="up" />
@@ -71,11 +73,13 @@ export default function Shell() {
           </header>
           {ro && <ReadOnlyBanner />}
           <main className="content" id="content">
+            {OFFICE_ROLES.includes(session.role) && <PageTip path={loc.pathname} />}
             <Outlet />
           </main>
         </div>
 
         <TabBar role={session.role} onSearch={() => searchRef.current?.focus()} />
+        {OFFICE_ROLES.includes(session.role) && <FirstTour />}
       </div>
 
     </UiCtx.Provider>
@@ -208,6 +212,8 @@ function RolePicker({ session, placement = 'down', compact = false, theme, toggl
           {toggleTheme && <><div className="h">Look</div><button onClick={() => { toggleTheme(); setOpen(false); }}>{theme === 'dark' ? <IconSun size={14} /> : <IconMoon size={14} />} {theme === 'dark' ? 'Light theme' : 'Dark theme'}</button></>}
           {!session.cloud && <><div className="h">Demo data</div>
           <button onClick={() => { api.resetDemo(); setOpen(false); }}><IconRefresh size={14} /> Reset demo data</button></>}
+          <div className="h">Help</div>
+          <button onClick={() => { resetHelp(); setOpen(false); }}><IconBulb size={14} /> Show tips and tour again</button>
           <div className="h">Signed in as {session.user?.name && session.user.name !== session.user.email ? `${session.user.name} · ` : ''}{session.user?.email}</div>
           <button onClick={() => { setOpen(false); api.signOut(); nav('/'); }}><IconLogout size={14} /> Sign out</button>
         </div>

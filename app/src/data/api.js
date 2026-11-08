@@ -1,4 +1,7 @@
+import {cleanSerials,serialStatus} from '../lib/serialNumbers.js';
+import {cleanAttendance} from '../lib/attendance.js';
 import { createDemoExpansion, missingDemoRecords } from '../lib/demoExpansion.js';
+import { createDemoShowcase } from '../lib/demoShowcase.js';
 import { changeCustomerDocument, changeCustomerResource, documentDefinition } from '../lib/customerDocuments.js';
 import { currentStageTask } from '../lib/projectPipeline.js';
 import {archiveCustomer,restoreArchivedCustomer} from '../lib/customerArchive.js';
@@ -7,7 +10,7 @@ import {cleanNameVerification} from '../lib/nameVerification.js';
 import { paymentMilestones, cleanPaymentPlan } from '../lib/customerMilestones.js';
 import { OPERATIONS_CATEGORIES, operationsOptions, changeOperationsOption } from '../lib/operationsLists.js';
 import { documentTaskState, preparedDocumentKeys, DOCUMENT_TASKS } from '../lib/documentTask.js';
-import { lastCustomerUpdate } from '../lib/customerUpdates.js';
+import { lastCustomerUpdate,lastCustomerUpdater } from '../lib/customerUpdates.js';
 import { indiaDay, cleanReceipt, expectedReceipts } from '../lib/receipts.js';
 import { makeBOMVersion, changeBOMVersion } from '../lib/procurement.js';
 import { TRACKING_STATUSES, trackingStatus, eligibleTracking, appendTracking, LOAN_DOCS } from '../lib/financeTracking.js';
@@ -116,9 +119,18 @@ async function startSession(user) {
   auth = { id: user.id, email: user.email, name: prof.name || user.email, role: prof.role };
   session = normalize({ ...DEFAULT_SESSION, ...sessionFromProfile(prof) });
   try { localStorage.setItem(PREFIX + 'session', JSON.stringify(session)); } catch { /* */ }
-  await loadCloud();
   bootError = '';
+  dataReady = false;
+  // Authentication is complete; dismiss Login while customer data loads.
   listeners.forEach((fn) => fn());
+  try {
+    await loadCloud();
+  } catch (error) {
+    bootError = error.message || 'Could not load customer data.';
+    throw error;
+  } finally {
+    listeners.forEach((fn) => fn());
+  }
 }
 function sessionFromProfile(prof) {
   const out = { role: prof.role, branch: 'All' };
@@ -565,7 +577,7 @@ function stageInfo(p) {
   // When the customer last moved stage. Customers never moved by hand (demo/imported) use their latest finished step.
   const lastDone = Object.values(p.tracks || {}).flat().filter((x) => x.status === 'done' && x.updatedAt).map((x) => x.updatedAt).sort().pop();
   const stageAt = p.stageAt || lastDone || p.createdAt;
-  return { stage: id, stageLabel: s.label, stageNo: stageIndex(id) + 1, stageCount: STAGES.length, stageAt, stageDays: daysSince(stageAt) };
+  return { stage: id, stageLabel: s.label, stageNo: stageIndex(id) + 1, stageCount: STAGES.length, stageAt, stageTimeRecorded:!!p.stageAt, stageDays: daysSince(stageAt) };
 }
 
 function describe(p, role = session.role) {
@@ -669,14 +681,15 @@ function summary(p, role = session.role) {
     paid: paid(p), due: dueNow(p), discom: p.discom, consumerNo: p.consumerNo, paymentMethod: p.paymentMethod, bank: p.bank,
     cp: p.cp, dealer: p.dealer, cpName: p.cp ? cpOf(p.cp).name : null, dealerName: p.dealer ? dealerOf(p.dealer).name : null, partner: partnerLabel(p),
     team: p.team, teamName: TEAMS.find((t) => t.id === p.team)?.name, technician: p.technician,
-    updatedAt: lastCustomerUpdate(p), createdAt: p.createdAt, ageDays: daysSince(p.createdAt), tracks: tp, worst: oi[0] ? oi[0].status : 'done', openCount: oi.filter((x) => x.status !== 'not_started').length,
+    updatedAt: lastCustomerUpdate(p), updatedBy:lastCustomerUpdater(p), createdAt: p.createdAt, ageDays: daysSince(p.createdAt), tracks: tp, worst: oi[0] ? oi[0].status : 'done', openCount: oi.filter((x) => x.status !== 'not_started').length,
     installDate: p.installDate, installStatus: item(p, 'supply', 'installation').status, nameMismatch: !p.nameCheck.match && !p.nameCheck.resolution,
     subsidyStatus: subsidyStatus(p), loan: p.loan, ...stage, ...d, stageNext,
   };
 }
 function log(p, entry) {
   p.updatedAt = nowIso();
-  const e = { at: p.updatedAt, by: session.role === 'Admin' ? 'Admin' : identityLabel() || session.role, ...entry };
+  const e = { at: p.updatedAt, ...entry, by:entry.by||auth?.name||identityLabel()||session.role };
+  p.updatedBy=e.by;
   p.timeline.push(e);
   load().activity.unshift({ ...e, crn: p.crn, pid: p.id, customer: p.name });
 }
@@ -1082,8 +1095,8 @@ export async function resolveNameCheck(pid, resolution) {
 export async function saveSerials(pid, serials) {
   const p = find(pid);
   if (!inScope(p) || !can(session.role, 'field')) deny();
-  p.serials = serials;
-  setItem(p, 'supply', 'serials', 'done');
+  p.serials = cleanSerials(serials);
+  setItem(p, 'supply', 'serials', serialStatus(p,p.serials));
   log(p, { type: 'document', text: `${serials.modules.length} module serials + inverter ${serials.inverter || '—'} recorded.` });
   persist(); return delay(true);
 }
@@ -1193,7 +1206,18 @@ export async function listDiscomDocs() {
   })));
 }
 // ---------- people / admin ----------
-export async function listAttendance() { return delay(clone(load().attendance)); }
+export async function listAttendance() {
+ if(!['Admin','Office Staff'].includes(realRole()))deny();
+ return delay(clone(load().attendance||[]));
+}
+export async function recordAttendance(name,input) {
+ if(realRole()!=='Admin')deny();
+ const row=load().attendance?.find(r=>r.name===name);if(!row)throw new Error('Choose a staff member');
+ const record=cleanAttendance(input,indiaDay(),auth?.name||identityLabel()||'Admin',nowIso());
+ const previous=row.entries?.[record.date];
+ row.entryHistory=[...(row.entryHistory||[]),...(previous?[previous]:[])];
+ row.entries={...row.entries,[record.date]:record};persist();return delay(true);
+}
 export async function listUsers() {
   if (!can(realRole(), 'users')) deny();
   if (!remote.enabled) return delay(STAFF.map((u) => ({ ...u, email: '', demo: true })));
@@ -1354,6 +1378,7 @@ export async function createSignLink(pid) {
  * exactly these fields. NOTE: in local (browser storage) mode the whole demo database is in the browser anyway.
  */
 export async function getSignRequest(token) {
+  if(String(token).startsWith('demo-only-'))return delay({status:'unknown'});
   if (remote.enabled) {
     const r = await remote.signRequest(token);
     return r ? { ...r, kind: r.kind || 'agreement', kwp: Number(r.kwp) || r.kwp } : { status: 'unknown' };
@@ -1489,10 +1514,11 @@ export async function setStage(pid, stageId) {
   const p = find(pid);
   if (!inScope(p) || !can(session.role, 'edit')) deny();
   if (!STAGE_IDS.includes(stageId)) throw new Error('Unknown stage');
-  const from = stageById(stageOf(p)).label;
+  const fromStage=stageOf(p);
+  const from = stageById(fromStage).label;
   if (stageOf(p) === stageId && p.stage) return delay(summary(p));
   p.stage = stageId; p.stageAt = new Date().toISOString();
-  log(p, { type: 'status', text: `Stage: ${from} → ${stageById(stageId).label}` });
+  log(p, { type: 'status', text: `Stage: ${from} → ${stageById(stageId).label}`,fromStage,toStage:stageId,stageChangedAt:p.stageAt });
   persist();
   return delay(summary(p));
 }
@@ -1618,6 +1644,7 @@ export async function updateFinanceTracking(pid, kind, form) {
   if (!p || !inScope(p) || !can(session.role, 'money_edit') || !['subsidy','loan'].includes(kind) || !eligibleTracking(p, kind)) deny();
   const at = nowIso();
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  if(form.expectedStatus!==undefined&&form.expectedStatus!==trackingStatus(p,kind))throw new Error('This status changed while the confirmation was open. Close and select it again.');
   p.financeTracking ||= {};
   p.financeTracking[kind] = appendTracking(p.financeTracking[kind], kind, form, { at, today, id: crypto.randomUUID(), by: auth?.name || identityLabel() || session.role, previousStatus: trackingStatus(p, kind) });
   if (kind === 'subsidy') {
@@ -1832,10 +1859,10 @@ export async function saveCustomerResource(pid,kind,url) {
   persist();return delay(true);
 }
 
-export async function addDemoCustomers() {
+export async function addDemoCustomers({showcase=false}={}) {
   if(!auth||auth.role!=='Admin'||session.role!=='Admin')deny('Only Admin can add demo customers');
   const data=load();
-  const candidates=missingDemoRecords(data.projects,createDemoExpansion(calibrate(generate()),STAGES));
+  const candidates=missingDemoRecords(data.projects,(showcase?createDemoShowcase:createDemoExpansion)(calibrate(generate()),STAGES));
   if(!candidates.length)return {added:0};
   const inserted=cloud()?await remote.insertDemoProjects(candidates):candidates;
   const additions=missingDemoRecords(data.projects,inserted);

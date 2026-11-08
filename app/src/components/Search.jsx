@@ -33,7 +33,7 @@ const SearchBox = forwardRef(function SearchBox({ onOpenCustomer, toggleTheme },
 
   const items = useMemo(() => {
     const s = q.trim().toLowerCase();
-    const match = (t) => !s || t.toLowerCase().includes(s);
+    const match = (t) => !s || String(t ?? "").toLowerCase().includes(s);
     const out = [];
     const role = session.role;
     if (!s) recent.slice(0, 6).forEach((h) => out.push({ group: 'Recently opened', icon: IconClock, label: h.name, meta: `${h.crn} · ${h.city} · ${h.kwp} kWp`, sentence: h.sentence, tone: h.tone, run: () => onOpenCustomer(h.id) }));

@@ -121,9 +121,9 @@ export function Installs() {
 }
 
 /* ---------------- Grid ---------------- */
-export function DiscomDocs() {
- const [params]=useSearchParams();const nav=useNavigate();const pid=params.get('a');
- return pid?<AgreementScreen pid={pid} onBack={()=>nav(`/p/${pid}?tab=documents`)}/>:<Navigate to="/documents" replace/>;
+export function DiscomDocs({customerId,onClose}) {
+ const [params]=useSearchParams();const nav=useNavigate();const pid=customerId||params.get('a');
+ return pid?<AgreementScreen pid={pid} onBack={onClose||(()=>nav(`/p/${pid}?tab=documents`))}/>:<Navigate to="/documents" replace/>;
 }
 
 function AgreementScreen({ pid, onBack }) {
@@ -176,8 +176,8 @@ export function Invoices() {
         {cur && (
           <div className="doc-preview">
             <div className="row" style={{ alignItems: 'flex-start' }}><DocBrand sub={'GSTIN ' + api.meta.COMPANY.gstin} />
-              <div style={{ marginLeft: 'auto', textAlign: 'right' }}><h2>Tax invoice</h2><div className="mono" style={{ fontSize: 12 }}>{cur.no}</div><div style={{ fontSize: 12, color: '#6b7280' }}>{fdateY(cur.date)}</div></div></div>
-            <div style={{ marginTop: 14, fontSize: 12.5 }}>Bill to <b><CustName id={cur.pid || cur.id} name={cur.name} block={false} /></b>, {cur.city} · <span className="mono">{cur.crn}</span></div>
+              <div style={{ marginLeft: 'auto', textAlign: 'right' }}><h2>Tax invoice</h2><div className="mono" style={{ fontSize: 13 }}>{cur.no}</div><div style={{ fontSize: 13, color: '#6b7280' }}>{fdateY(cur.date)}</div></div></div>
+            <div style={{ marginTop: 14, fontSize: 13 }}>Bill to <b><CustName id={cur.pid || cur.id} name={cur.name} block={false} /></b>, {cur.city} · <span className="mono">{cur.crn}</span></div>
             <table><thead><tr><th>Description</th><th className="r">Amount</th></tr></thead>
               <tbody>
                 <tr><td>Supply of {cur.kwp} kWp solar PV system (HSN 8541)</td><td className="r mono">{inr(cur.base * 0.7)}</td></tr>
@@ -230,28 +230,7 @@ export function Commissions({ kind }) {
 export function Warranty() { return <WarrantyRecords />; }
 
 /* ---------------- Team ---------------- */
-export function Attendance() {
-  const [rows] = useData(() => api.listAttendance(), []);
-  const days = Array.from({ length: 14 }, (_, i) => { const d = new Date(api.meta.TODAY + 'T00:00:00'); d.setDate(d.getDate() - 13 + i); return d; });
-  return (
-    <div className="page">
-      <PageHead title="Team" sub="Attendance of field staff for the last 14 days (GPS check-in, demo data)." />
-      <SubNav parent="team" />
-      <div className="card card-b" style={{ overflowX: 'auto' }}>
-        <div className="att" style={{ minWidth: 560 }}>
-          <span />{days.map((d, i) => <span key={i} className="faint mono" style={{ fontSize: 10, textAlign: 'center' }}>{d.getDate()}</span>)}
-          {(rows || []).map((r) => (
-            <div key={r.name} style={{ display: 'contents' }}>
-              <span className="ell"><b style={{ fontWeight: 550 }}>{r.name}</b><div className="faint" style={{ fontSize: 11 }}>{r.role} · in {r.checkIn} · {r.site}</div></span>
-              {r.days.map((d, i) => <span key={i} className={'c ' + d} title={d} />)}
-            </div>
-          ))}
-        </div>
-        <div className="row small faint" style={{ marginTop: 12, gap: 14 }}><span className="row"><span className="c present" style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--accent)' }} /> present</span><span className="row"><span style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--violet)' }} /> half day</span><span className="row"><span style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--coral)' }} /> absent</span></div>
-      </div>
-    </div>
-  );
-}
+export {default as Attendance} from './Attendance.jsx';
 /* ---------------- Activity ---------------- */
 export function Activity() {
   const [rows] = useData(() => api.listActivity(150), []);

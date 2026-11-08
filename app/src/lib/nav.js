@@ -21,36 +21,36 @@ export const MODULES = [
   // My jobs is the crews' own home screen; office roles reach a job from the customer record instead.
   { key: 'field', section: 'main', tone: 'orange', page: 'field', label: 'My jobs', to: '/field', icon: IconScan, chord: 'f', desc: 'Installation jobs, checklist and serial scanning', only: ['Technician', 'Installation Team'] },
   { key: 'stamp', section: 'main', tone: 'violet', page: 'stamp', label: 'Signatures', to: '/stamp', icon: IconStack2, chord: 'q', only: ['Stamp Staff'], desc: 'Customer agreements awaiting signature' },
-  { key: 'overview', section: 'main', tone: 'blue', page: 'overview', label: 'Overview', to: '/overview', icon: IconLayoutDashboard, chord: 'o', desc: 'Big picture: progress of all customers' },
-  { key: 'projects', section: 'main', tone: 'violet', page: 'projects', label: 'Customers', to: '/projects', icon: IconUsers, chord: 'c', desc: 'Customer status and the next action', match: ['/p'] },
+  { key: 'overview', section: 'main', tone: 'blue', page: 'overview', label: 'Overview', to: '/overview', match: ['/project-management'], icon: IconLayoutDashboard, chord: 'o', desc: 'Big picture: progress of all customers' },
+  { key: 'projects', section: 'main', tone: 'violet', page: 'projects', label: 'Customers', to: '/projects', icon: IconUsers, chord: 'c', desc: 'Customer status and the next action', match: ['/p', '/completed', '/warranty', '/trash'] },
   // Quotation, Feasibility, Name check and DISCOM submission are documents: they open from Documents.
-  { key:'project_management',section:'main',tone:'blue',page:'project_management',label:'Project Management',to:'/project-management',icon:IconTable,desc:'Follow every project from enquiry to handover'},
-  { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/grid', '/proposal'] },
+  // Hidden 2026-11-07 (ADR 0010): duplicates Overview's pipeline and the Customers stage filters. Route still works.
+  // { key:'project_management',section:'main',tone:'blue',page:'project_management',label:'Project Management',to:'/project-management',icon:IconTable,desc:'Follow every project from enquiry to handover'},
+  { key: 'documents', section: 'main', tone: 'blue', page: 'documents', label: 'Documents', to: '/documents', icon: IconFiles, chord: 'z', desc: 'Every document for a customer in one place', match: ['/quotes', '/feasibility', '/grid', '/proposal', '/name-check'] },
   { key: 'my_commission', section: 'main', tone: 'green', page: 'my_commission', label: 'My commission', to: '/my-commission', icon: IconCoin, chord: 'm', desc: 'Commission earned, pending and paid' },
   { key: 'tally', section: 'main', tone: 'sun', page: 'tally', label: 'Truck tally', to: '/supply/tally', icon: IconTruck, chord: 'y', desc: 'Load check before the truck leaves', only: ['Installation Team'] },
   // Operations: installation schedule and stock.
-  { key: 'installs', section: 'ops', tone: 'orange', page: 'installs', label: 'Materials & Delivery', pages: ['installs', 'inventory', 'bom', 'challan'], match: ['/supply/inventory', '/supply/bom', '/supply/challan'], to: '/installs', icon: IconCalendarEvent, chord: 'i', desc: 'Installation visits by day' },
+  { key: 'installs', section: 'main', tone: 'orange', page: 'installs', label: 'Materials & Delivery', pages: ['installs', 'inventory', 'bom', 'challan'], match: ['/supply/inventory', '/supply/bom', '/supply/challan'], to: '/installs', icon: IconCalendarEvent, chord: 'i', desc: 'Installation visits by day' },
   { key: 'inventory', workspaceOnly: true, section: 'ops', tone: 'sun', page: 'inventory', label: 'Inventory', to: '/supply/inventory', icon: IconPackages, chord: 's', desc: 'Stock in the warehouse and what is reserved' },
   { key: 'bom', workspaceOnly: true, section: 'ops', tone: 'violet', page: 'bom', label: 'Procurement', to: '/supply/bom', icon: IconClipboardList, chord: 'r', desc: 'Bill of materials and what to order for each job' },
   { key: 'dispatch', workspaceOnly: true, section: 'ops', tone: 'blue', page: 'challan', label: 'Dispatch', to: '/supply/challan', icon: IconTruckDelivery, chord: 'd', desc: 'Delivery challans and truck tally', match: ['/supply/tally'], except: ['Installation Team'] },
-  { key: 'warranty', section: 'ops', tone: 'green', page: 'warranty', label: 'Completed', to: '/completed', match: ['/warranty'], icon: IconShieldCheck, chord: 'w', desc: 'Warranty dates and registration' },
+  { menu: false, key: 'warranty', section: 'ops', tone: 'green', page: 'warranty', label: 'Completed', to: '/completed', match: ['/warranty'], icon: IconShieldCheck, chord: 'w', desc: 'Warranty dates and registration' },
   // { key: 'vendors', section: 'ops', tone: 'slate', page: 'inventory', label: 'Vendors', to: null, icon: IconBuildingFactory2, soon: true, desc: 'Vendor list and purchase orders (coming soon)' },
-  { key: 'finance', section: 'money', tone: 'green', page: 'finance', label: 'Finance overview', to: '/finance', icon: IconCurrencyRupee, desc: 'Receipts, expected payments, loans and subsidy' },
-  { key: 'payments_received', section: 'money', tone: 'green', page: 'finance', label: 'Payments received', to: '/finance/received', icon: IconReceipt },
-  { key: 'payments_expected', section: 'money', tone: 'sun', page: 'finance', label: 'Expected payments', to: '/finance/expected', icon: IconCalendarEvent },
-  { key: 'operations', section: 'ops', tone: 'blue', page: 'operations', label: 'Operations', to: '/operations', icon: IconPackages, desc: 'Equipment brands, models and registrations' },
-  { key: 'name_check', section: 'ops', tone: 'blue', page: 'name_check', label: 'Name check', to: '/name-check', icon: IconId, desc: 'Electricity bill and bank name verification' },
-  { key: 'subsidy_tracking', section: 'money', tone: 'green', page: 'subsidy_tracking', label: 'Subsidy tracking', to: '/money/subsidy', icon: IconCoin, trackingKind: 'subsidy' },
-  { key: 'loan_tracking', section: 'money', tone: 'blue', page: 'loan_tracking', label: 'Loan tracking', to: '/money/loans', icon: IconCurrencyRupee, trackingKind: 'loan' },
+  { key: 'finance', section: 'main', tone: 'green', page: 'finance', label: 'Finance', to: '/finance', match: ['/money'], icon: IconCurrencyRupee, desc: 'Receipts, expected payments, loans and subsidy' },
+  { menu: false, key: 'payments_received', section: 'money', tone: 'green', page: 'finance', label: 'Payments received', to: '/finance/received', icon: IconReceipt },
+  { key: 'operations', section: 'main', tone: 'blue', page: 'operations', label: 'Operations', to: '/operations', icon: IconPackages, desc: 'Equipment brands, models and registrations' },
+  { menu: false, key: 'name_check', section: 'ops', tone: 'blue', page: 'name_check', label: 'Name check', to: '/name-check', icon: IconId, desc: 'Electricity bill and bank name verification' },
+  { menu: false, key: 'subsidy_tracking', section: 'money', tone: 'green', page: 'subsidy_tracking', label: 'Subsidy tracking', to: '/money/subsidy', icon: IconCoin, trackingKind: 'subsidy' },
+  { menu: false, key: 'loan_tracking', section: 'money', tone: 'blue', page: 'loan_tracking', label: 'Loan tracking', to: '/money/loans', icon: IconCurrencyRupee, trackingKind: 'loan' },
   // Money (vendor commission stays removed).
   // { key: 'money', section: 'money', tone: 'green', page: 'invoices', label: 'Bills & invoices', to: '/money/invoices', icon: IconReceipt, chord: 'p', desc: 'Invoices for every customer' },
-  { key: 'cp_comm', section: 'money', tone: 'sun', page: 'cp_comm', label: 'Partner commission', to: '/money/cp', icon: IconCoin, chord: 'k', desc: 'Commission for channel partners and dealers' },
-  { key: 'inst_comm', section: 'money', tone: 'orange', page: 'inst_comm', label: 'Installation commission', to: '/money/install', icon: IconTool, chord: 'l', desc: 'Commission for installation teams' },
-  {key:'trash',section:'archive',tone:'slate',page:'trash',label:'Trash',to:'/trash',icon:IconTrash,desc:'Recover removed customers'},
+  { menu: false, key: 'cp_comm', section: 'money', tone: 'sun', page: 'cp_comm', label: 'Partner commission', to: '/money/cp', icon: IconCoin, chord: 'k', desc: 'Commission for channel partners and dealers' },
+  { menu: false, key: 'inst_comm', section: 'money', tone: 'orange', page: 'inst_comm', label: 'Installation commission', to: '/money/install', icon: IconTool, chord: 'l', desc: 'Commission for installation teams' },
+  { menu: false,key:'trash',section:'archive',tone:'slate',page:'trash',label:'Trash',to:'/trash',icon:IconTrash,desc:'Recover removed customers'},
   // Team.
-  { key: 'team', section: 'team', tone: 'blue', page: 'attendance', label: 'Team', to: '/team/attendance', icon: IconUsers, chord: 'u', desc: 'Attendance, users and roles', match: ['/team'] },
-  { key: 'chat', section: 'team', tone: 'rose', page: 'chat', label: 'Team chat', to: '/chat', icon: IconMessages, chord: 'b', desc: 'Shared chat for Admin and Office staff' },
-  { key: 'activity', section: 'team', tone: 'slate', page: 'activity', label: 'Activity log', to: '/activity', icon: IconActivity, chord: 'a', desc: 'Everything that changed, newest first' },
+  { key: 'team', section: 'main', tone: 'blue', page: 'attendance', pages: ['attendance', 'users', 'chat', 'activity'], label: 'Team', to: '/team', icon: IconUsers, chord: 'u', desc: 'Attendance, users, chat and activity', match: ['/team', '/chat', '/activity'] },
+  { menu: false, key: 'chat', section: 'team', tone: 'rose', page: 'chat', label: 'Team chat', to: '/chat', icon: IconMessages, chord: 'b', desc: 'Shared chat for Admin and Office staff' },
+  { menu: false, key: 'activity', section: 'team', tone: 'slate', page: 'activity', label: 'Activity log', to: '/activity', icon: IconActivity, chord: 'a', desc: 'Everything that changed, newest first' },
 ];
 
 export const SUBPAGES = [
@@ -68,7 +68,9 @@ export const SUBPAGES = [
   // { page: 'proposal_settings', label: 'Proposal settings', to: '/team/proposal-settings', parent: 'team' },
 ];
 
+/** Side menu only: pages marked `menu: false` stay reachable as tabs, in search and on All pages (ADR 0011). */
+export const menuModulesFor = (role, opts) => modulesFor(role, opts).filter((m) => m.menu !== false);
 export const modulesFor = (role, { withSoon = false } = {}) => MODULES.filter((m) => !m.workspaceOnly && (m.pages ? m.pages.some((p) => pageAllowed(p, role)) : pageAllowed(m.page, role)) && (!m.only || m.only.includes(role)) && !(m.except || []).includes(role) && (withSoon || !m.soon));
 /** Is this menu item the current page? Exact address, a sub-address, or one of its `match` prefixes. */
-export const isModuleActive = (m, path) => m.key==='finance' ? path==='/finance' : !!m.to && [m.to, ...(m.match || [])].some((t) => path === t || path.startsWith(t + '/'));
+export const isModuleActive = (m, path) => !!m.to && [m.to, ...(m.match || [])].some((t) => path === t || path.startsWith(t + '/'));
 export const subpagesFor = (role, parent) => SUBPAGES.filter((s) => s.parent === parent && pageAllowed(s.page, role));

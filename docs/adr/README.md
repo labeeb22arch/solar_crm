@@ -19,3 +19,9 @@ Use this log when a change affects navigation, customer data, stage progression,
 | [0008](0008-generic-demo-branding.md) | Accepted, 2026-10-22 | Generic Solar CRM branding across demo documents, signing pages and messages |
 
 Each entry records context, decision, alternatives, consequences and checks. Update the feature/access checklist after delivery. Changes to these choices require another discussion.
+
+| [0009](0009-admin-workflow-repair.md) | Accepted, 2026-10-26 | Admin work stays in customer context; finance on Today; remove Expected payments; repair documents, scanner and attendance |
+
+| [0010](0010-hide-stage-menu.md) | Accepted, 2026-11-07 | Hide the Project Management stage menu from the sidebar; stage pages stay reachable from Overview, Today and Customers |
+
+| [0011](0011-intuitiveness-pass.md) | Accepted, 2026-11-08 | 8-link menu with tabs, one customer progress card, help tips and tour, Gujarati/Hindi partner and field screens, 13px text and 44px phone targets |

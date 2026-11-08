@@ -9,7 +9,7 @@ import { CustomerPicker } from './Quotes.jsx';
 import { SignLinkDialog } from '../components/SignLink.jsx';
 import { ProposalViewer } from '../docs/proposal/ProposalViewer.jsx';
 import { computeProposal, subsidyFor, isLoanMethod } from '../docs/proposal/calc.js';
-import { proposalInputs, packagePrice, withLoanDefaults, proposalNumber, PACKAGE_SIZES } from '../docs/proposal/settings.js';
+import { proposalInputs, packagePrice, sizePrice, withLoanDefaults, proposalNumber, PACKAGE_SIZES } from '../docs/proposal/settings.js';
 
 const numIn = (v) => (v === '' ? '' : Number(v));
 function F({ label, children, hint }) {
@@ -17,10 +17,10 @@ function F({ label, children, hint }) {
 }
 
 /** Residential on-grid proposal: inputs on the left, live A4 pages on the right, then send it for acceptance. */
-export default function Proposal() {
+export default function Proposal({customerId, embedded=false}) {
   const toast = useToast();
   const [params, setParams] = useSearchParams();
-  const pid = params.get('p');
+  const pid = customerId || params.get('p');
   const [p] = useData(() => (pid ? api.getProject(pid) : Promise.resolve(null)), [pid]);
   const [settings] = useData(() => api.getProposalSettings(), []);
   const [assets] = useData(() => api.getCompanyAssets(), []);
@@ -44,7 +44,7 @@ export default function Proposal() {
     return (
       <div className="page">
         <PageHead title="Residential proposal" sub="Pick a customer to build their multi-page solar proposal and send it for acceptance." />
-        <div className="docs-layout"><div className="card" style={{ padding: 12 }}><CustomerPicker value={pid} onChange={(id) => setParams({ p: id })} /></div><div className="card"><Empty hint="Search by name, CRN or city on the left.">Pick a customer.</Empty></div></div>
+        <div className="docs-layout"><div className="card" style={{ padding: 12 }}>{!embedded && <CustomerPicker value={pid} onChange={(id) => setParams({ p: id })} />}</div><div className="card"><Empty hint="Search by name, CRN or city on the left.">Pick a customer.</Empty></div></div>
       </div>
     );
   }
@@ -53,7 +53,7 @@ export default function Proposal() {
   if (!inp || forId !== p.id) return <div className="page" />;
 
   const set = (patch) => setInp((x) => ({ ...x, ...patch }));
-  const setKwp = (kwp) => setInp((x) => withLoanDefaults({ ...x, kwp, price: packagePrice(settings, kwp), subsidy: x.subsidyAuto ? subsidyFor(kwp) : x.subsidy }, settings));
+  const setKwp = (kwp) => setInp((x) => withLoanDefaults({ ...x, kwp, price: sizePrice(settings, kwp), subsidy: x.subsidyAuto ? subsidyFor(kwp) : x.subsidy }, settings));
   const setPrice = (price) => setInp((x) => withLoanDefaults({ ...x, price }, settings));
   const setMethod = (paymentMethod) => setInp((x) => withLoanDefaults({ ...x, paymentMethod }, settings));
   const reset = () => { setInp(proposalInputs(p, settings)); toast('Started again from the customer record and current settings'); };
@@ -72,10 +72,10 @@ export default function Proposal() {
 
   return (
     <div className="page">
-      <PageHead title="Residential proposal" sub="On-grid rooftop solar proposal for a home. Check the inputs, look through the pages, then send it to the customer to accept on their phone."><BackToDocs pid={p.id}/></PageHead>
+      <PageHead title="Residential proposal" sub="On-grid rooftop solar proposal for a home. Check the inputs, look through the pages, then send it to the customer to accept on their phone.">{!embedded && <BackToDocs pid={p.id}/>}</PageHead>
       <div className="pb-layout">
         <div className="card card-b pb-form">
-          <CustomerPicker value={pid} onChange={(id) => setParams({ p: id })} />
+          {!embedded && <CustomerPicker value={pid} onChange={(id) => setParams({ p: id })} />}
           <div className="row small" style={{ flexWrap: 'wrap', gap: 6 }}>
             <b className="grow ell">{p.name}</b>
             <span className="faint">{p.city} · {p.type}</span>
@@ -88,7 +88,7 @@ export default function Proposal() {
 
           <div className="pb-sec">System</div>
           <div className="grid2">
-            <F label="System size"><select className="select" value={inp.kwp} onChange={(e) => setKwp(Number(e.target.value))}>{PACKAGE_SIZES.map((k) => <option key={k} value={k}>{k} kWp</option>)}</select></F>
+            <F label="System size"><select className="select" value={inp.kwp} onChange={(e) => setKwp(Number(e.target.value))}>{[...new Set([...PACKAGE_SIZES, Number(p.kwp) || 0, Number(inp.kwp) || 0])].filter(Boolean).sort((a, b) => a - b).map((k) => <option key={k} value={k}>{k} kWp{k === Number(p.kwp) ? ' · record' : ''}</option>)}</select></F>
             <F label="Module wattage"><input className="input num" type="number" step="5" value={inp.moduleWp} onChange={(e) => set({ moduleWp: numIn(e.target.value) })} /></F>
           </div>
           <F label="Modules" hint={`${model.modules.qty} × ${model.modules.wp} Wp`}><ManagedInput category="panel_brands" className="input" value={inp.moduleMake} onChange={(e) => set({ moduleMake: e.target.value })} /></F>
@@ -106,7 +106,7 @@ export default function Proposal() {
 
           <div className="pb-sec">Price</div>
           <div className="grid2">
-            <F label="Price incl. GST (₹)" hint={inp.price === packagePrice(settings, inp.kwp) ? 'package' : 'edited'}><input className="input num" type="number" min="0" step="100" value={inp.price} onChange={(e) => setPrice(numIn(e.target.value))} /></F>
+            <F label="Price incl. GST (₹)" hint={inp.price === Number(p.value) && inp.kwp === Number(p.kwp) ? 'customer record' : inp.price === packagePrice(settings, inp.kwp) ? 'package' : inp.price === sizePrice(settings, inp.kwp) ? 'nearest package — check' : 'edited'}><input className="input num" type="number" min="0" step="100" value={inp.price} onChange={(e) => setPrice(numIn(e.target.value))} /></F>
             <F label="Subsidy (₹)" hint={inp.subsidyAuto ? 'auto' : <button className="btn sm ghost" style={{ height: 18, padding: '0 4px' }} onClick={(e) => { e.preventDefault(); set({ subsidyAuto: true, subsidy: subsidyFor(inp.kwp) }); }}>auto</button>}>
               <input className="input num" type="number" min="0" step="1000" value={inp.subsidy} onChange={(e) => set({ subsidy: numIn(e.target.value), subsidyAuto: false })} />
             </F>
@@ -146,7 +146,7 @@ export default function Proposal() {
           <ProposalViewer key={showSent ? 'sent' + sent.version : 'draft'} snap={snap} accepted={showSent ? sent.accepted : null} assets={assets} title={`${snap.number}${showSent ? '' : ' (draft)'}`} />
         </div>
       </div>
-      {link && <SignLinkDialog link={link} onClose={() => setLink(null)} />}
+      {link && <SignLinkDialog link={{...link,customerId:pid}} onClose={() => setLink(null)} />}
     </div>
   );
 }

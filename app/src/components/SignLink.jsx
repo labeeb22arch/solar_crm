@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconSignature, IconCopy, IconBrandWhatsapp, IconX, IconCheck } from '@tabler/icons-react';
 import * as api from '../data/api.js';
-import { useToast, fdate } from '../lib/hooks.jsx';
+import { useToast, useData, fdate } from '../lib/hooks.jsx';
 
 /** "Send signing link" button: makes a new link (the old one stops working) and shows it with Copy and WhatsApp. */
 export function SignLinkButton({ pid, className = 'btn', label = 'Send signing link', small }) {
@@ -17,13 +17,19 @@ export function SignLinkButton({ pid, className = 'btn', label = 'Send signing l
   return (
     <>
       <button className={className + (small ? ' sm' : '')} onClick={make} disabled={busy}><IconSignature size={small ? 14 : 15} /> {busy ? 'Making link…' : label}</button>
-      {link && <SignLinkDialog link={link} onClose={() => setLink(null)} />}
+      {link && <SignLinkDialog link={{...link,customerId:pid}} onClose={() => setLink(null)} />}
     </>
   );
 }
 
 export function SignLinkDialog({ link, onClose }) {
   const toast = useToast();
+  const [project]=useData(()=>link.customerId?api.getProject(link.customerId):Promise.resolve(null),[link.customerId]);
+  const token=String(link.url||'').split('#/sign/')[1];
+  useEffect(()=>{
+    const request=link.kind==='proposal'?project?.proposalRequest:project?.signRequest;
+    if(token&&request?.token===token&&(request.status==='signed'||request.usedAt))onClose();
+  },[project,token,link.kind,onClose]);
   const [copied, setCopied] = useState(false);
   const first = String(link.name || '').split(/\s+/)[0];
   const phone = String(link.phone || '').replace(/\D/g, '').slice(-10);

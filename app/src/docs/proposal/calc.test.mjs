@@ -1,5 +1,6 @@
 // Run: node src/docs/proposal/calc.test.mjs
 import assert from 'node:assert/strict';
+import { proposalInputs, mergeSettings, sizePrice } from './settings.js';
 import { subsidyFor, emi, monthsToRepay, irr, roi, npv, paybackYears, moduleCount, gstSplit, rupeesInWords, computeProposal } from './calc.js';
 
 const close = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol, `${msg}: expected ~${b}, got ${a}`);
@@ -81,5 +82,13 @@ assert.equal(loan.loan.flows.length, 25);
 assert.equal(loan.loan.flows[7].loanPaid, 0, 'no EMI after the tenure');
 assert.ok(loan.loan.breakevenYear >= 1 && loan.loan.breakevenYear <= 25);
 assert.equal(computeProposal(base).loan, null, 'cash customers have no loan section');
+
+// --- quotation keeps the customer's real size and price ---
+const defaults = mergeSettings();
+const fractional = proposalInputs({ kwp: 3.3, value: 191400 }, defaults);
+assert.equal(fractional.kwp, 3.3, '3.3 kWp is not rounded to a package size');
+assert.equal(fractional.price, 191400, 'price comes from the customer record');
+assert.equal(proposalInputs({ kwp: 3.3 }, defaults).price, sizePrice(defaults, 3), 'no record price: nearest package price');
+assert.equal(proposalInputs({ kwp: 5 }, defaults).price, sizePrice(defaults, 5));
 
 console.log('proposal calc tests passed');

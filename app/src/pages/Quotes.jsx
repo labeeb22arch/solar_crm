@@ -84,9 +84,9 @@ export default function Quotes() {
           <div className="doc-preview">
             <div className="row" style={{ alignItems: 'flex-start' }}>
               <DocBrand sub={`Rooftop solar · ${p.branch}`} />
-              <div style={{ marginLeft: 'auto', textAlign: 'right' }}><h2>Quotation</h2><div className="mono" style={{ fontSize: 12, color: '#6b7280' }}>Q-{p.crn.slice(4)} · v{(p.quotation?.version || 0) + (p.quotation?.status === 'approved' ? 0 : 1)}</div><div style={{ fontSize: 12, color: '#6b7280' }}>{fdateY(new Date().toISOString())} · valid {cfg.validity} days</div></div>
+              <div style={{ marginLeft: 'auto', textAlign: 'right' }}><h2>Quotation</h2><div className="mono" style={{ fontSize: 13, color: '#6b7280' }}>Q-{p.crn.slice(4)} · v{(p.quotation?.version || 0) + (p.quotation?.status === 'approved' ? 0 : 1)}</div><div style={{ fontSize: 13, color: '#6b7280' }}>{fdateY(new Date().toISOString())} · valid {cfg.validity} days</div></div>
             </div>
-            <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 12.5 }}>
+            <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
               <div><div style={{ color: '#6b7280' }}>Prepared for</div><b>{p.name}</b><div>{p.city} · {p.discom} consumer</div><div className="mono">{p.phone}</div></div>
               <div><div style={{ color: '#6b7280' }}>System</div><b>{cfg.kwp} kWp on-grid {p.type.toLowerCase()}</b><div>Est. generation <span className="mono">{calc.gen.toLocaleString('en-IN')}</span> kWh/yr</div><div>Est. saving <span className="mono">{inr(calc.save)}</span>/yr</div></div>
             </div>
@@ -105,10 +105,10 @@ export default function Quotes() {
                 {calc.sub > 0 && <tr><td><b>Effective cost</b></td><td /><td className="r mono"><b>{inr(calc.effective)}</b></td></tr>}
               </tbody>
             </table>
-            <div style={{ marginTop: 16, fontSize: 11.5, color: '#6b7280', lineHeight: 1.6 }}>
+            <div style={{ marginTop: 16, fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>
               Payment: {p.paymentMethod}. Warranty: modules 25 yr performance, inverter 5–8 yr, workmanship 5 yr. Subsidy depends on DISCOM approval and requires the DISCOM consumer name to match the bank account name.
             </div>
-            <div style={{ marginTop: 16, display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, color: '#6b7280' }}><IconSun size={15} /> Customer approves with one tap on WhatsApp — no signature needed at this step.</div>
+            <div style={{ marginTop: 16, display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, color: '#6b7280' }}><IconSun size={15} /> Customer approves with one tap on WhatsApp — no signature needed at this step.</div>
           </div>
         ) : <div className="card"><Empty>Pick a customer to build a quotation.</Empty></div>}
       </div>

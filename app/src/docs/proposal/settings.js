@@ -79,12 +79,15 @@ export function cleanSettings(patch = {}) {
 }
 
 export const packagePrice = (settings, kwp) => (settings.packages.find((p) => p.kwp === Number(kwp)) || {}).price || 0;
+/** Package price for a size; sizes between packages use the nearest package as a starting price. */
+export const sizePrice = (settings, kwp) => packagePrice(settings, kwp) || packagePrice(settings, nearestPackage(Number(kwp)));
 export const nearestPackage = (kwp) => PACKAGE_SIZES.reduce((best, s) => (Math.abs(s - kwp) < Math.abs(best - kwp) ? s : best), 3);
 
 /** First draft of the builder's inputs: the customer's record plus the settings. Everything the pages print lives here. */
 export function proposalInputs(p, settings) {
-  const kwp = nearestPackage(Number(p.kwp) || 3);
-  const price = packagePrice(settings, kwp);
+  // Keep the customer's real size (3.3, 4.4 … kWp are common); price from the record, else the nearest package.
+  const kwp = Number(p.kwp) || 3;
+  const price = Number(p.value) || sizePrice(settings, kwp);
   const down = Math.round((price * settings.downPaymentPct) / 100);
   return {
     kwp, price, subsidy: subsidyFor(kwp), subsidyAuto: true, gstRate: settings.gstRate, gstNote: settings.gstNote,
