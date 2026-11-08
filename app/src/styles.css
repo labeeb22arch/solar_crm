@@ -1724,11 +1724,11 @@ small { font-size: 13px; }
 /* Phone button layout (2026-11-08): main action first and wide, contact icons beside it, secondary actions below. */
 @media (max-width: 720px) {
   .customer-workspace .workspace-heading .workspace-actions { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; margin-left: 0; grid-column: 1 / -1; }
-  .customer-workspace .workspace-actions > .btn.primary { order: 1; flex: 0 0 calc(100% - 104px); min-width: 0; justify-content: center; }
+  .customer-workspace .workspace-actions > .btn.primary { order: 1; flex: 1 1 0; min-width: 0; justify-content: center; }
   .customer-workspace .workspace-actions > a.btn.icon { order: 2; flex: none; }
-  .customer-workspace .workspace-actions > button.btn:not(.primary) { order: 3; flex: 1 1 calc(50% - 4px); justify-content: center; }
-  .customer-workspace .workspace-actions > .record-more-actions { order: 4; flex: 1 1 calc(50% - 4px); position: relative; }
-  .customer-workspace .workspace-actions > .record-more-actions > summary { width: 100%; justify-content: center; }
+  .customer-workspace .workspace-actions > button.btn:not(.primary) { order: 5; flex: 1 1 100%; justify-content: center; }
+  .customer-workspace .workspace-actions > .record-more-actions { order: 3; flex: none; position: relative; }
+  .customer-workspace .workspace-actions > .record-more-actions > summary { justify-content: center; }
   .customer-workspace .workspace-actions > .record-more-actions > button { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; white-space: nowrap; }
   /* Page headings: the action button sits on its own full-width row under the title. */
   .page-head .actions, .page-head > .btn, .page-head > a.btn { margin-left: 0; width: 100%; }
@@ -1750,3 +1750,7 @@ small { font-size: 13px; }
   .pipeline-metrics > button, .pipeline-metrics > div { padding: 12px 14px; gap: 4px; }
   .pipeline-metrics strong { font-size: 22px; }
 }
+
+/* Three-dots menu button: no disclosure triangle. */
+.record-more-actions > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.record-more-actions > summary::-webkit-details-marker { display: none; }
