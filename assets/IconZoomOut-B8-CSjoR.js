@@ -1,0 +1,11 @@
+import{t as o}from"./index-C8zS0OH8.js";/**
+ * @license @tabler/icons-react v3.19.0 - MIT
+ *
+ * This source code is licensed under the MIT license.
+ * See the LICENSE file in the root directory of this source tree.
+ */var t=o("outline","zoom-in","IconZoomIn",[["path",{d:"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0",key:"svg-0"}],["path",{d:"M7 10l6 0",key:"svg-1"}],["path",{d:"M10 7l0 6",key:"svg-2"}],["path",{d:"M21 21l-6 -6",key:"svg-3"}]]);/**
+ * @license @tabler/icons-react v3.19.0 - MIT
+ *
+ * This source code is licensed under the MIT license.
+ * See the LICENSE file in the root directory of this source tree.
+ */var e=o("outline","zoom-out","IconZoomOut",[["path",{d:"M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0",key:"svg-0"}],["path",{d:"M7 10l6 0",key:"svg-1"}],["path",{d:"M21 21l-6 -6",key:"svg-2"}]]);export{e as I,t as a};
